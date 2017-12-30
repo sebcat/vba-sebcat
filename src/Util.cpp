@@ -79,7 +79,7 @@ bool utilWritePNGFile(const char *fileName, int w, int h, u8 *pix)
     return false;
   }
 
-  if(setjmp(png_ptr->jmpbuf)) {
+  if(setjmp(png_jmpbuf(png_ptr))) {
     png_destroy_write_struct(&png_ptr,NULL);
     fclose(fp);
     return false;
@@ -984,7 +984,7 @@ void utilWriteData(gzFile gzFile, variable_desc *data)
 
 gzFile utilGzOpen(const char *file, const char *mode)
 {
-  utilGzWriteFunc = (int (*)(void *,void * const, unsigned int))gzwrite;
+  utilGzWriteFunc = (int (*)(gzFile, const voidp, unsigned int))gzwrite;
   utilGzReadFunc = gzread;
   utilGzCloseFunc = gzclose;
 
