@@ -332,7 +332,7 @@ char *elfGetAddressSymbol(u32 addr)
   return "";
 }
 
-bool elfFindLineInModule(u32 *addr, char *name, int line)
+bool elfFindLineInModule(u32 *addr, const char *name, int line)
 {
   CompileUnit *unit = elfCompileUnits;
 
@@ -480,7 +480,7 @@ char *elfGetSymbol(int i, u32 *value, u32 *size, int *type)
   return NULL;
 }
 
-bool elfGetSymbolAddress(char *sym, u32 *addr, u32 *size, int *type)
+bool elfGetSymbolAddress(const char *sym, u32 *addr, u32 *size, int *type)
 {
   if(elfSymbolsCount) {
     for(int i = 0; i < elfSymbolsCount; i++) {

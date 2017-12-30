@@ -6,7 +6,7 @@
 #define isatty _isatty
 #endif
 
-char *exprString;
+const char *exprString;
 int exprCol;
 
 #define YY_INPUT(buf,result,max_size) \
