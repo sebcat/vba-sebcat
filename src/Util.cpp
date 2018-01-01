@@ -38,7 +38,6 @@ extern "C" {
 #include "RTC.h"
 #include "Port.h"
 
-
 extern "C" {
 #include "memgzio.h"
 }

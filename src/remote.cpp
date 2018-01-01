@@ -21,17 +21,11 @@
 #include <string.h>
 
 #ifndef WIN32
-# include <unistd.h>
-# include <sys/socket.h>
-# include <netdb.h>
-# ifdef HAVE_NETINET_IN_H
-#  include <netinet/in.h>
-# endif // HAVE_NETINET_IN_H
-# ifdef HAVE_ARPA_INET_H
-#  include <arpa/inet.h>
-# else // ! HAVE_ARPA_INET_H
-#  define socklen_t int
-# endif // ! HAVE_ARPA_INET_H
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #else // WIN32
 # include <winsock.h>
 # include <io.h>
@@ -65,7 +59,7 @@ bool (*remoteInitFnc)() = NULL;
 void (*remoteCleanUpFnc)() = NULL;
 
 #ifndef SDL
-void remoteSetSockets(SOCKET l, SOCKET r)
+void remoteSetSockets(int l, int r)
 {
   remoteSocket = r;
   remoteListenSocket = l;

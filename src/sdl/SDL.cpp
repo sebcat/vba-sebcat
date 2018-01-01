@@ -23,21 +23,21 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "AutoBuild.h"
+#include <SDL/SDL.h>
 
-#include "SDL.h"
-#include "GBA.h"
-#include "agbprint.h"
-#include "Flash.h"
-#include "Port.h"
+#include "../AutoBuild.h"
+#include "../GBA.h"
+#include "../agbprint.h"
+#include "../Flash.h"
+#include "../Port.h"
 #include "debugger.h"
-#include "RTC.h"
-#include "Sound.h"
-#include "Text.h"
-#include "unzip.h"
-#include "Util.h"
-#include "gb/GB.h"
-#include "gb/gbGlobals.h"
+#include "../RTC.h"
+#include "../Sound.h"
+#include "../Text.h"
+#include "../unzip.h"
+#include "../Util.h"
+#include "../gb/GB.h"
+#include "../gb/gbGlobals.h"
 
 #ifndef WIN32
 # include <unistd.h>
