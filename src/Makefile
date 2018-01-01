@@ -86,7 +86,6 @@ HFILES = \
     arm-new.h \
     armdis.h \
     bios.h \
-    config.h \
     elf.h \
     expr.cpp.h \
     exprNode.h \
