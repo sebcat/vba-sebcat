@@ -1,7 +1,1 @@
-Makefile
-Makefile.in
-config.status
-config.log
-.deps
 *.o
-*.a
