@@ -483,7 +483,6 @@ extern bool gbIsGameboyRom(char *);
   sdlStretcher[sdlStretcherPos++] = 0xf3;\
   sdlStretcher[sdlStretcherPos++] = 0xa5;
 
-
 void sdlMakeStretcher(int width)
 {
   sdlStretcherPos = 0;
@@ -952,29 +951,6 @@ FILE *sdlFindFile(const char *name)
   }
   return NULL;
 }
-
-struct delay_ctx {
-  int div;
-  int curr_div;
-  int ms;
-};
-
-static struct delay_ctx delay_ = {
-  .div = 10,
-  .curr_div = 10,
-  .ms = 8,
-};
-
-void delay_main_loop() {
-  delay_.curr_div--;
-  if (delay_.curr_div <= 0) {
-    delay_.curr_div = delay_.div;
-    if (delay_.ms > 0) {
-      SDL_Delay(delay_.ms);
-    }
-  }
-}
-
 
 void sdlReadPreferences(FILE *f)
 {
@@ -1737,30 +1713,6 @@ void sdlPollEvents()
 
             systemScreenMessage("Reset");
           }
-        }
-        break;
-      case SDLK_j:
-        if(!(event.key.keysym.mod & MOD_NOCTRL) &&
-           (event.key.keysym.mod & KMOD_CTRL)) {
-          if (delay_.div > 0) {
-            delay_.div--;
-            systemScreenMessage("lowered div");
-          }
-        } else {
-          if (delay_.ms > 0) {
-            delay_.ms--;
-            systemScreenMessage("lowered ms");
-          }
-        }
-        break;
-      case SDLK_k:
-        if(!(event.key.keysym.mod & MOD_NOCTRL) &&
-           (event.key.keysym.mod & KMOD_CTRL)) {
-          delay_.div++;
-          systemScreenMessage("increased div");
-        } else {
-          systemScreenMessage("increased ms");
-          delay_.ms++;
         }
         break;
       case SDLK_b:
@@ -2608,7 +2560,6 @@ int main(int argc, char **argv)
       if(debugger && emulator.emuHasDebugger)
         dbgMain();
       else {
-        delay_main_loop();
         emulator.emuMain(emulator.emuCount);
         if(rewindSaveNeeded && rewindMemory && emulator.emuWriteMemState) {
           rewindCount++;
