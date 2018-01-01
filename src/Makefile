@@ -14,46 +14,46 @@ CFLAGS+= \
     -DSYSCONFDIR=\"/etc\"
 
 CFILES = \
+    2xSaI.c \
+    agbprint.c \
+    admame.c \
+    bios.c \
+    cheat_search.c \
+    cheats.c \
+    eeprom.c \
+    expr_node.c \
+    expr-lex.c \
+    expr.c \
+    flash.c \
+    gba.c \
+    gfx.c \
+    globals.c \
     pixel.c \
-    memgzio.c
+    sound.c \
+    bilinear.c \
+    elf.c \
+    armdis.c \
+    scanline.c \
+    mode0.c \
+    mode1.c \
+    mode2.c \
+    mode3.c \
+    mode4.c \
+    mode5.c \
+    memgzio.c \
+    hq2x.c \
+    simple2x.c \
+    text.c \
+    rtc.c \
+    sram.c \
+    motionblur.c \
+    interframe.c \
+    sdl/debugger.c \
+    remote.c \
+    unzip.c \
+    util.c
 
 CPPFILES = \
-    2xSaI.cpp \
-    CheatSearch.cpp \
-    Cheats.cpp \
-    EEprom.cpp \
-    Flash.cpp \
-    GBA.cpp \
-    Gfx.cpp \
-    Globals.cpp \
-    Mode0.cpp \
-    Mode1.cpp \
-    Mode2.cpp \
-    Mode3.cpp \
-    Mode4.cpp \
-    Mode5.cpp \
-    RTC.cpp \
-    Sound.cpp \
-    Sram.cpp \
-    Text.cpp \
-    Util.cpp \
-    admame.cpp \
-    agbprint.cpp \
-    armdis.cpp \
-    bilinear.cpp \
-    bios.cpp \
-    elf.cpp \
-    expr-lex.cpp \
-    expr.cpp \
-    exprNode.cpp \
-    hq2x.cpp \
-    interframe.cpp \
-    motionblur.cpp \
-    remote.cpp \
-    scanline.cpp \
-    simple2x.cpp \
-    unzip.cpp \
-    sdl/debugger.cpp \
     gb/GB.cpp \
     gb/gbCheats.cpp \
     gb/gbDis.cpp \
@@ -65,30 +65,30 @@ CPPFILES = \
     gb/gbSound.cpp
 
 HFILES = \
-    AutoBuild.h \
-    CheatSearch.h \
-    Cheats.h \
-    EEprom.h \
-    Flash.h \
-    GBA.h \
-    GBAinline.h \
-    Gfx.h \
-    Globals.h \
+    auto_build.h \
+    cheat_search.h \
+    cheats.h \
+    eeprom.h \
+    flash.h \
+    gba.h \
+    gba_inline.h \
+    gfx.h \
+    globals.h \
     NLS.h \
-    Port.h \
-    RTC.h \
-    Sound.h \
-    Sram.h \
-    System.h \
-    Text.h \
-    Util.h \
+    port.h \
+    rtc.h \
+    sound.h \
+    sram.h \
+    system.h \
+    text.h \
+    util.h \
     agbprint.h \
     arm-new.h \
     armdis.h \
     bios.h \
     elf.h \
-    expr.cpp.h \
-    exprNode.h \
+    expr.h \
+    expr_node.h \
     hq2x.h \
     interp.h \
     lq2x.h \
@@ -114,7 +114,7 @@ all: VisualBoyAdvance
 $(CFILES): $(HFILES)
 $(CPPFILES): $(HFILES)
 VisualBoyAdvance: $(COBJS) $(CPPOBJS)  sdl/SDL.o
-	$(CC) -o $@ $(CFLAGS2) $(COBJS) $(CPPOBJS) sdl/SDL.o $(LDFLAGS)
+	$(CC) -o $@ $(CFLAGS) $(COBJS) $(CPPOBJS) sdl/SDL.o $(LDFLAGS)
 
 clean:
 	rm -f $(COBJS) $(CPPOBJS) sdl/SDL.o VisualBoyAdvance

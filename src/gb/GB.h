@@ -43,7 +43,6 @@ extern void gbSoundReset();
 extern void gbSoundSetQuality(int);
 extern void gbReset();
 extern void gbCleanUp();
-extern bool gbWriteBatteryFile(const char *);
 extern bool gbWriteBatteryFile(const char *, bool);
 extern bool gbReadBatteryFile(const char *);
 extern bool gbWriteSaveState(const char *);

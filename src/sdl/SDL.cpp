@@ -26,17 +26,17 @@
 
 #include <SDL/SDL.h>
 
-#include "../AutoBuild.h"
-#include "../GBA.h"
+#include "../auto_build.h"
+#include "../gba.h"
 #include "../agbprint.h"
-#include "../Flash.h"
-#include "../Port.h"
+#include "../flash.h"
+#include "../port.h"
 #include "debugger.h"
-#include "../RTC.h"
-#include "../Sound.h"
-#include "../Text.h"
+#include "../rtc.h"
+#include "../sound.h"
+#include "../text.h"
 #include "../unzip.h"
-#include "../Util.h"
+#include "../util.h"
 #include "../gb/GB.h"
 #include "../gb/gbGlobals.h"
 
@@ -51,47 +51,38 @@
 #define DELTA_SIZE (322*242*4)
 
 extern "C" {
-extern void Pixelate(u8*,u32,u8*,u8*,u32,int,int);
-extern void Pixelate32(u8*,u32,u8*,u8*,u32,int,int);
-}
-
-extern bool soundEcho;
-extern bool soundLowPass;
-extern bool soundReverse;
-extern int Init_2xSaI(u32);
-extern void _2xSaI(u8*,u32,u8*,u8*,u32,int,int);
-extern void _2xSaI32(u8*,u32,u8*,u8*,u32,int,int);  
-extern void Super2xSaI(u8*,u32,u8*,u8*,u32,int,int);
-extern void Super2xSaI32(u8*,u32,u8*,u8*,u32,int,int);
-extern void SuperEagle(u8*,u32,u8*,u8*,u32,int,int);
-extern void SuperEagle32(u8*,u32,u8*,u8*,u32,int,int);  
 extern void MotionBlur(u8*,u32,u8*,u8*,u32,int,int);
 extern void MotionBlur32(u8*,u32,u8*,u8*,u32,int,int);
-extern void AdMame2x(u8*,u32,u8*,u8*,u32,int,int);
-extern void AdMame2x32(u8*,u32,u8*,u8*,u32,int,int);
+extern void Pixelate(u8*,u32,u8*,u8*,u32,int,int);
+extern void Pixelate32(u8*,u32,u8*,u8*,u32,int,int);
 extern void Simple2x(u8*,u32,u8*,u8*,u32,int,int);
 extern void Simple2x32(u8*,u32,u8*,u8*,u32,int,int);
-extern void Bilinear(u8*,u32,u8*,u8*,u32,int,int);
-extern void Bilinear32(u8*,u32,u8*,u8*,u32,int,int);
-extern void BilinearPlus(u8*,u32,u8*,u8*,u32,int,int);
-extern void BilinearPlus32(u8*,u32,u8*,u8*,u32,int,int);
 extern void Scanlines(u8*,u32,u8*,u8*,u32,int,int);
 extern void Scanlines32(u8*,u32,u8*,u8*,u32,int,int);
 extern void ScanlinesTV(u8*,u32,u8*,u8*,u32,int,int);
 extern void ScanlinesTV32(u8*,u32,u8*,u8*,u32,int,int);
-extern void hq2x(u8*,u32,u8*,u8*,u32,int,int);
-extern void hq2x32(u8*,u32,u8*,u8*,u32,int,int);
-extern void lq2x(u8*,u32,u8*,u8*,u32,int,int);
-extern void lq2x32(u8*,u32,u8*,u8*,u32,int,int);
-
 extern void SmartIB(u8*,u32,int,int);
 extern void SmartIB32(u8*,u32,int,int);
 extern void MotionBlurIB(u8*,u32,int,int);
 extern void MotionBlurIB32(u8*,u32,int,int);
+extern void hq2x(u8*,u32,u8*,u8*,u32,int,int);
+extern void hq2x32(u8*,u32,u8*,u8*,u32,int,int);
+extern void lq2x(u8*,u32,u8*,u8*,u32,int,int);
+extern void lq2x32(u8*,u32,u8*,u8*,u32,int,int);
+extern int Init_2xSaI(u32);
+extern void _2xSaI(u8*,u32,u8*,u8*,u32,int,int);
+extern void _2xSaI32(u8*,u32,u8*,u8*,u32,int,int);
+extern void Super2xSaI(u8*,u32,u8*,u8*,u32,int,int);
+extern void Super2xSaI32(u8*,u32,u8*,u8*,u32,int,int);
+extern void SuperEagle(u8*,u32,u8*,u8*,u32,int,int);
+extern void SuperEagle32(u8*,u32,u8*,u8*,u32,int,int);
+extern void Bilinear(u8*,u32,u8*,u8*,u32,int,int);
+extern void Bilinear32(u8*,u32,u8*,u8*,u32,int,int);
+extern void BilinearPlus(u8*,u32,u8*,u8*,u32,int,int);
+extern void BilinearPlus32(u8*,u32,u8*,u8*,u32,int,int);
+extern void AdMame2x(u8*,u32,u8*,u8*,u32,int,int);
+extern void AdMame2x32(u8*,u32,u8*,u8*,u32,int,int);
 
-void Init_Overlay(SDL_Surface *surface, int overlaytype);
-void Quit_Overlay(void);
-void Draw_Overlay(SDL_Surface *surface, int size);
 
 extern void remoteInit();
 extern void remoteCleanUp();
@@ -101,6 +92,15 @@ extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
 extern void debuggerOutput(const char *, u32);
+}
+
+extern bool soundEcho;
+extern bool soundLowPass;
+extern bool soundReverse;
+
+void Init_Overlay(SDL_Surface *surface, int overlaytype);
+void Quit_Overlay(void);
+void Draw_Overlay(SDL_Surface *surface, int size);
 
 extern void CPUUpdateRenderBuffers(bool);
 
@@ -357,9 +357,6 @@ struct option sdlOptions[] = {
   { "yuv", required_argument, 0, 'Y' },
   { NULL, no_argument, NULL, 0 }
 };
-
-extern bool CPUIsGBAImage(char *);
-extern bool gbIsGameboyRom(char *);
 
 #ifndef C_CORE
 #define SDL_LONG(val) \
@@ -1206,7 +1203,7 @@ void sdlReadPreferences(FILE *f)
   }
 }
 
-void sdlReadPreferences()
+void sdlFindAndReadPreferences()
 {
   FILE *f = sdlFindFile("VisualBoyAdvance.cfg");
 
@@ -1714,7 +1711,7 @@ void sdlPollEvents()
            (event.key.keysym.mod & KMOD_CTRL)) {
           if(emulating && emulator.emuReadMemState && rewindMemory 
              && rewindCount) {
-            rewindPos = --rewindPos & 7;
+            rewindPos = (rewindPos + 1) & 7;
             emulator.emuReadMemState(&rewindMemory[REWIND_SIZE*rewindPos], 
                                      REWIND_SIZE);
             rewindCount--;
@@ -1946,7 +1943,7 @@ int main(int argc, char **argv)
 
   parseDebug = true;
 
-  sdlReadPreferences();
+  sdlFindAndReadPreferences();
 
   sdlPrintUsage = 0;
   
@@ -2188,7 +2185,7 @@ int main(int argc, char **argv)
     
     bool failed = false;
 
-    IMAGE_TYPE type = utilFindType(szFile);
+    enum IMAGE_TYPE type = utilFindType(szFile);
 
     if(type == IMAGE_UNKNOWN) {
       systemMessage(0, "Unknown file type %s", szFile);
@@ -2536,9 +2533,9 @@ int main(int argc, char **argv)
 
   if(delta == NULL) {
     delta = (u8*)malloc(DELTA_SIZE);
-    memset(delta, 255, 322*242*4);
+    memset(delta, 255, DELTA_SIZE);
   }
-  
+
   emulating = 1;
   renderedFrames = 0;
 
@@ -2562,9 +2559,9 @@ int main(int argc, char **argv)
           if(emulator.emuWriteMemState &&
              emulator.emuWriteMemState(&rewindMemory[rewindPos*REWIND_SIZE], 
                                        REWIND_SIZE)) {
-            rewindPos = ++rewindPos & 7;
+            rewindPos = (rewindPos + 1) & 7;
             if(rewindCount == 8)
-              rewindTopPos = ++rewindTopPos & 7;
+              rewindTopPos = (rewindTopPos + 1) & 7;
           }
         }
 
@@ -2788,7 +2785,7 @@ u32 systemReadJoypad(int which)
       res |= autoFire;
     autoFireToggle = !autoFireToggle;
   }
-  
+
   return res;
 }
 
@@ -2905,7 +2902,7 @@ void systemScreenCapture(int a)
   systemScreenMessage("Screen capture");
 }
 
-void soundCallback(void *,u8 *stream,int len)
+void soundCallback(void *data,u8 *stream,int len)
 {
   if(!emulating)
     return;

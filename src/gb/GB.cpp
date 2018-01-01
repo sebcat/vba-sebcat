@@ -21,7 +21,7 @@
 #include <string.h>
 #include <memory.h>
 
-#include "../System.h"
+#include "../system.h"
 #include "../NLS.h"
 #include "GB.h"
 #include "gbCheats.h"
@@ -30,7 +30,7 @@
 #include "gbSGB.h"
 #include "gbSound.h"
 #include "../unzip.h"
-#include "../Util.h"
+#include "../util.h"
 
 #ifdef __GNUC__
 #define _stricmp strcasecmp
@@ -1920,11 +1920,12 @@ bool gbWriteBatteryFile(const char *file, bool extendedSave)
   return true;
 }
 
-bool gbWriteBatteryFile(const char *file)
+bool gbWriteBatteryFileExtendedSave(const char *file)
 {
   gbWriteBatteryFile(file, true);
   return true;
 }
+
 
 bool gbReadBatteryFile(const char *file)
 {
@@ -2440,7 +2441,7 @@ void gbCleanUp()
 
 bool gbLoadRom(const char *szFile)
 {
-  int size = 0;
+  size_t size = 0;
   
   if(gbRom != NULL) {
     gbCleanUp();
@@ -2451,11 +2452,11 @@ bool gbLoadRom(const char *szFile)
   gbRom = utilLoad(szFile,
                    utilIsGBImage,
                    NULL,
-                   size);
+                   &size);
   if(!gbRom)
     return false;
 
-  gbRomSize = size;
+  gbRomSize = (int)size;
   
   return gbUpdateSizes();
 }
@@ -3165,7 +3166,7 @@ struct EmulatedSystem GBSystem = {
   // emuReadBattery
   gbReadBatteryFile,
   // emuWriteBattery
-  gbWriteBatteryFile,
+  gbWriteBatteryFileExtendedSave,
   // emuReadState
   gbReadSaveState,
   // emuWriteState

@@ -19,9 +19,9 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include "../System.h"
-#include "../Port.h"
-#include "../Util.h"
+#include "../system.h"
+#include "../port.h"
+#include "../util.h"
 #include "GB.h"
 #include "gbGlobals.h"
 

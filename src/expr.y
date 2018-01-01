@@ -1,15 +1,13 @@
 %{
-namespace std {  
 #include <sys/types.h>
 #include <stdio.h>
 #include <memory.h>
 #include <stdlib.h>
 #include <string.h>
-}
 
-#include "System.h"
+#include "system.h"
 #include "elf.h"
-#include "exprNode.h" 
+#include "expr_node.h" 
 
 extern int yyerror(char *);
 extern int yylex(); 

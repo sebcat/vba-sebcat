@@ -7127,7 +7127,7 @@ if(cond_res) {
   CASE_256(0xf00)
     // SWI <comment>
     clockTicks += 3;
-    CPUSoftwareInterrupt(opcode & 0x00FFFFFF);      
+    CPUSoftwareInterruptC(opcode & 0x00FFFFFF);      
     break;
 #ifdef GP_SUPPORT
   case 0xe11:

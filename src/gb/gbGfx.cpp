@@ -18,7 +18,7 @@
 
 #include <memory.h>
 
-#include "../GBA.h"
+#include "../gba.h"
 #include "gbGlobals.h"
 #include "gbSGB.h"
 

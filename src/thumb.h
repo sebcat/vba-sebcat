@@ -2382,7 +2382,7 @@ switch(opcode >> 8) {
    break;   
  case 0xdf:
    // SWI #comment
-   CPUSoftwareInterrupt(opcode & 0xFF);
+   CPUSoftwareInterruptC(opcode & 0xFF);
    break;
  case 0xe0:
  case 0xe1:

@@ -21,9 +21,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "../System.h"
+#include "../system.h"
 #include "../NLS.h"
-#include "../Util.h"
+#include "../util.h"
 
 #include "gbCheats.h"
 #include "gbGlobals.h"

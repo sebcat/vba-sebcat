@@ -18,10 +18,16 @@
 
 #include <memory.h>
 
-#include "../System.h"
-#include "../Util.h"
+#include "../system.h"
+#include "../util.h"
 #include "gbGlobals.h"
 #include "gbSound.h"
+
+extern "C" {
+extern bool soundInit();
+extern void soundShutdown();
+extern void soundResume();
+}
 
 extern u8 soundBuffer[6][735];
 extern u16 soundFinalWave[1470];
@@ -32,8 +38,6 @@ extern int soundVolume;
 #define NOISE_MAGIC 5
 
 extern int speed;
-
-extern void soundResume();
 
 extern u8 soundWavePattern[4][32];
 
@@ -848,8 +852,6 @@ void gbSoundReset()
   soundEchoIndex = 0;
 }
 
-extern bool soundInit();
-extern void soundShutdown();
 
 void gbSoundSetQuality(int quality)
 {

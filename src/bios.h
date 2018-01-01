@@ -20,6 +20,10 @@
 #ifndef VBA_BIOS_H
 #define VBA_BIOS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void BIOS_ArcTan();
 extern void BIOS_ArcTan2();
 extern void BIOS_BitUnPack();
@@ -35,7 +39,7 @@ extern void BIOS_HuffUnComp();
 extern void BIOS_LZ77UnCompVram();
 extern void BIOS_LZ77UnCompWram();
 extern void BIOS_ObjAffineSet();
-extern void BIOS_RegisterRamReset();
+extern void BIOS_RegisterRamResetReg0();
 extern void BIOS_RegisterRamReset(u32);
 extern void BIOS_RLUnCompVram();
 extern void BIOS_RLUnCompWram();
@@ -43,4 +47,8 @@ extern void BIOS_SoftReset();
 extern void BIOS_Sqrt();
 extern void BIOS_MidiKey2Freq();
 extern void BIOS_SndDriverJmpTableCopy();
+
+#ifdef __cplusplus
+}
+#endif
 #endif // VBA_BIOS_H
