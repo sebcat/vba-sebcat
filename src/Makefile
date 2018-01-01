@@ -114,9 +114,6 @@ all: VisualBoyAdvance
 
 $(CFILES): $(HFILES)
 $(CPPFILES): $(HFILES)
-$(COBJS): $(CFILES)
-$(CPPOBJS): $(CPPFILES)
-
 VisualBoyAdvance: $(COBJS) $(CPPOBJS)  sdl/SDL.o
 	$(CC) -o $@ $(CFLAGS2) $(COBJS) $(CPPOBJS) sdl/SDL.o $(LDFLAGS)
 

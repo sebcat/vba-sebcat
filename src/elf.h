@@ -164,7 +164,7 @@ struct Enum {
 struct Type {
   u32 offset;
   TypeEnum type;
-  char *name;
+  const char *name;
   int encoding;
   int size;
   int bitSize;
@@ -270,7 +270,7 @@ extern u32 elfReadLEB128(u8 *, int *);
 extern s32 elfReadSignedLEB128(u8 *, int *);
 extern bool elfRead(const char *, int &, FILE *f);
 extern bool elfGetSymbolAddress(const char *,u32 *, u32 *, int *);
-extern char *elfGetAddressSymbol(u32);
+extern const char *elfGetAddressSymbol(u32);
 extern char *elfGetSymbol(int, u32 *, u32 *, int *);
 extern void elfCleanUp();
 extern bool elfGetCurrentFunction(u32, Function **, CompileUnit **c);

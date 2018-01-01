@@ -287,7 +287,7 @@ void debuggerPrintBaseType(Type *t, u32 value, u32 location,
   }
 }
 
-char *debuggerPrintType(Type *t)
+const char *debuggerPrintType(Type *t)
 {
   char buffer[1024];  
   static char buffer2[1024];
@@ -433,7 +433,7 @@ void debuggerPrintEnum(Type *t, u32 value)
   for(i = 0; i < t->enumeration->count; i++) {
     EnumMember *m = (EnumMember *)&t->enumeration->members[i];
     if(value == m->value) {
-      printf(m->name);
+      printf("%s", m->name);
       return;
     }
   }
@@ -1397,10 +1397,10 @@ void debuggerQuit(int, const char **)
   }
 }
 
-void debuggerOutput(char *s, u32 addr)
+void debuggerOutput(const char *s, u32 addr)
 {
   if(s)
-    printf(s);
+    printf("%s", s);
   else {
     char c;
 

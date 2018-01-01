@@ -20,13 +20,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-using namespace std;
- 
 #include "System.h"
 #include "elf.h"
 #include "exprNode.h" 
 
-extern int yyerror(char *);
+extern int yyerror(const char *);
 extern int yylex(); 
 extern char *yytext;
 
@@ -976,7 +974,7 @@ yyerrhandle:
 #line 57 "expr.y"
 
 
-int yyerror(char *s)
+int yyerror(const char *s)
 {
   return 0;
 }

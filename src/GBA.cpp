@@ -178,10 +178,6 @@ const int cpuMemoryWait[16] = {
   0, 0, 2, 0, 0, 0, 0, 0,
   2, 2, 2, 2, 2, 2, 0, 0
 };
-const int cpuMemoryWait32[16] = {
-  0, 0, 3, 0, 0, 0, 0, 0,
-  3, 3, 3, 3, 3, 3, 0, 0
-};
   
 const bool memory32[16] =
   { true, false, false, true, true, false, false, true, false, false, false, false, false, false, true, false};

@@ -5,6 +5,9 @@
  * $Header: /cvsroot/vba/VisualBoyAdvance/src/expr-lex.cpp,v 1.2 2003/06/06 14:17:21 forgotten Exp $
  */
 
+#define YY_NO_UNPUT
+#define YY_NO_INPUT
+
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
@@ -1036,6 +1039,8 @@ yy_state_type yy_current_state;
         }
 
 
+#if 0 /* Wunused */
+
 #ifndef YY_NO_UNPUT
 #ifdef YY_USE_PROTOS
 static void yyunput( int c, register char *yy_bp )
@@ -1152,6 +1157,8 @@ static int input()
 
         return c;
         }
+
+#endif /* Wunused */
 
 
 #ifdef YY_USE_PROTOS

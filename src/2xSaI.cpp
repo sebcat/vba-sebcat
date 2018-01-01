@@ -163,50 +163,6 @@ static inline u32 Q_INTERPOLATE (u32 A, u32 B, u32 C, u32 D)
   return x + y;
 }
 
-static inline int GetResult1_32 (u32 A, u32 B, u32 C, u32 D,
-                                 u32 /* E */)
-{
-    int x = 0;
-    int y = 0;
-    int r = 0;
-
-    if (A == C)
-      x += 1;
-    else if (B == C)
-      y += 1;
-    if (A == D)
-      x += 1;
-    else if (B == D)
-      y += 1;
-    if (x <= 1)
-      r += 1;
-    if (y <= 1)
-      r -= 1;
-    return r;
-}
-
-static inline int GetResult2_32 (u32 A, u32 B, u32 C, u32 D,
-                                 u32 /* E */)
-{
-  int x = 0;
-  int y = 0;
-  int r = 0;
-  
-  if (A == C)
-    x += 1;
-  else if (B == C)
-    y += 1;
-  if (A == D)
-    x += 1;
-  else if (B == D)
-    y += 1;
-  if (x <= 1)
-    r -= 1;
-  if (y <= 1)
-    r += 1;
-  return r;
-}
-
 #define BLUE_MASK565 0x001F001F
 #define RED_MASK565 0xF800F800
 #define GREEN_MASK565 0x07E007E0
@@ -1165,7 +1121,7 @@ void Scale_2xSaI (u8 *srcPtr, u32 srcPitch, u8 * /* deltaPtr */,
       u32 E, F, G, H;
       u32 I, J, K, L;
       u32 x1, x2, a1, f1, f2;
-      u32 position, product1;
+      u32 position, product1 = 0;
       
       position = w >> 16;
       A = bP[position]; // current pixel

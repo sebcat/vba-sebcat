@@ -219,9 +219,9 @@ void remoteInit()
     remoteInitFnc();
 }
 
-void remotePutPacket(char *packet)
+void remotePutPacket(const char *packet)
 {
-  char *hex = "0123456789abcdef";  
+  const char *hex = "0123456789abcdef";  
   char buffer[1024];
 
   int count = strlen(packet);
@@ -270,7 +270,7 @@ void remotePutPacket(char *packet)
 #define debuggerWriteByte(addr, value) \
   map[(addr)>>24].address[(addr) & map[(addr)>>24].mask] = (value)
 
-void remoteOutput(char *s, u32 addr)
+void remoteOutput(const char *s, u32 addr)
 {
   char buffer[16384];
 

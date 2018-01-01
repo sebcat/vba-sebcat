@@ -22,6 +22,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <getopt.h>
 
 #include <SDL/SDL.h>
 
@@ -47,14 +48,7 @@
 # define GETCWD _getcwd
 #endif // WIN32
 
-#ifndef __GNUC__
-# define HAVE_DECL_GETOPT 0
-# define __STDC__ 1
-# include "getopt.h"
-#else // ! __GNUC__
-# define HAVE_DECL_GETOPT 1
-# include "getopt.h"
-#endif // ! __GNUC__
+#define DELTA_SIZE (322*242*4)
 
 #ifdef MMX
 extern "C" bool cpu_mmx;
@@ -103,10 +97,10 @@ extern void remoteInit();
 extern void remoteCleanUp();
 extern void remoteStubMain();
 extern void remoteStubSignal(int,int);
-extern void remoteOutput(char *, u32);
+extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
-extern void debuggerOutput(char *, u32);
+extern void debuggerOutput(const char *, u32);
 
 extern void CPUUpdateRenderBuffers(bool);
 
@@ -238,7 +232,7 @@ extern void debuggerSignal(int,int);
 
 void (*dbgMain)() = debuggerMain;
 void (*dbgSignal)(int,int) = debuggerSignal;
-void (*dbgOutput)(char *, u32) = debuggerOutput;
+void (*dbgOutput)(const char *, u32) = debuggerOutput;
 
 int  mouseCounter = 0;
 int autoFire = 0;
@@ -1672,7 +1666,7 @@ void sdlPollEvents()
               soundPause();
           }
           
-          memset(delta,255,sizeof(delta));
+          memset(delta,255,DELTA_SIZE);
         }
       }
       break;
@@ -1788,12 +1782,12 @@ void sdlPollEvents()
       case SDLK_4:
         if(!(event.key.keysym.mod & MOD_NOALT) &&
            (event.key.keysym.mod & KMOD_ALT)) {
-          char *disableMessages[4] = 
+          const char *disableMessages[4] = 
             { "autofire A disabled",
               "autofire B disabled",
               "autofire R disabled",
               "autofire L disabled"};
-          char *enableMessages[4] = 
+          const char *enableMessages[4] = 
             { "autofire A",
               "autofire B",
               "autofire R",
@@ -2541,7 +2535,7 @@ int main(int argc, char **argv)
     ifbFunction = NULL;
 
   if(delta == NULL) {
-    delta = (u8*)malloc(322*242*4);
+    delta = (u8*)malloc(DELTA_SIZE);
     memset(delta, 255, 322*242*4);
   }
   
@@ -2668,7 +2662,6 @@ void systemDrawScreen()
     u8 *src = pix;
     u8 *dest = (u8*)surface->pixels;
     int i;
-    u32 *stretcher = (u32 *)sdlStretcher;
     if(systemColorDepth == 16)
       src += srcPitch;
     int option = sizeOption;
