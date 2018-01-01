@@ -20,6 +20,7 @@
 #ifndef VBA_SYSTEM_H
 #define VBA_SYSTEM_H
 
+#include <stdbool.h>
 #include "unzip.h"
 
 #ifndef NULL
@@ -77,7 +78,7 @@ struct EmulatedSystem {
   int emuCount;
 };
 
-extern void log(const char *,...);
+extern void log_print(const char *,...);
 
 extern bool systemPauseOnFrame();
 extern void systemGbPrint(u8 *,int,int,int,int);

@@ -14,6 +14,7 @@ CFLAGS+= \
     -DSYSCONFDIR=\"/etc\"
 
 CFILES = \
+    pixel.c \
     memgzio.c
 
 CPPFILES = \
@@ -48,7 +49,6 @@ CPPFILES = \
     hq2x.cpp \
     interframe.cpp \
     motionblur.cpp \
-    pixel.cpp \
     remote.cpp \
     scanline.cpp \
     simple2x.cpp \
