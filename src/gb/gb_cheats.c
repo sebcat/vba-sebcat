@@ -25,8 +25,8 @@
 #include "../NLS.h"
 #include "../util.h"
 
-#include "gbCheats.h"
-#include "gbGlobals.h"
+#include "gb_cheats.h"
+#include "gb_globals.h"
 
 gbCheat gbCheatList[100];
 int gbCheatNumber = 0;

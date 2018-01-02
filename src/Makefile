@@ -1,19 +1,19 @@
 .PHONY: all clean
 
 LDFLAGS+= \
-	$$(pkg-config --libs sdl libpng) \
+    $$(pkg-config --libs sdl libpng) \
     -lm
 
 CFLAGS+= \
-	-Wall \
-	-Werror \
+    -Wall \
+    -Werror \
     -I/usr/local/include \
     -I/usr/local/include/libpng16/ \
     -DSDL \
     -DC_CORE \
     -DSYSCONFDIR=\"/etc\"
 
-CFILES = \
+SRCS = \
     2xSaI.c \
     agbprint.c \
     admame.c \
@@ -25,6 +25,15 @@ CFILES = \
     expr-lex.c \
     expr.c \
     flash.c \
+    gb/gb.c \
+    gb/gb_sound.c \
+    gb/gb_cheats.c \
+    gb/gb_dis.c \
+    gb/gb_gfx.c \
+    gb/gb_globals.c \
+    gb/gb_memory.c \
+    gb/gb_printer.c \
+    gb/gb_sgb.c \
     gba.c \
     gfx.c \
     globals.c \
@@ -53,18 +62,7 @@ CFILES = \
     unzip.c \
     util.c
 
-CPPFILES = \
-    gb/GB.cpp \
-    gb/gbCheats.cpp \
-    gb/gbDis.cpp \
-    gb/gbGfx.cpp \
-    gb/gbGlobals.cpp \
-    gb/gbMemory.cpp \
-    gb/gbPrinter.cpp \
-    gb/gbSGB.cpp \
-    gb/gbSound.cpp
-
-HFILES = \
+HDRS = \
     auto_build.h \
     cheat_search.h \
     cheats.h \
@@ -96,25 +94,23 @@ HFILES = \
     thumb.h \
     unzip.h \
     sdl/debugger.h \
-    gb/GB.h \
-    gb/gbCheats.h \
-    gb/gbCodes.h \
-    gb/gbCodesCB.h \
-    gb/gbGlobals.h \
-    gb/gbMemory.h \
-    gb/gbPrinter.h \
-    gb/gbSGB.h \
-    gb/gbSound.h
+    gb/gb.h \
+    gb/gb_cheats.h \
+    gb/gb_codes.h \
+    gb/gb_codes_cb.h \
+    gb/gb_globals.h \
+    gb/gb_memory.h \
+    gb/gb_printer.h \
+    gb/gb_sgb.h \
+    gb/gb_sound.h
 
-COBJS = ${CFILES:.c=.o}
-CPPOBJS = ${CPPFILES:.cpp=.o}
+OBJS = ${SRCS:.c=.o}
 
 all: VisualBoyAdvance
 
-$(CFILES): $(HFILES)
-$(CPPFILES): $(HFILES)
-VisualBoyAdvance: $(COBJS) $(CPPOBJS)  sdl/SDL.o
-	$(CC) -o $@ $(CFLAGS) $(COBJS) $(CPPOBJS) sdl/SDL.o $(LDFLAGS)
+$(SRCS): $(HDRS)
+VisualBoyAdvance: $(OBJS) sdl/sdl.o
+	$(CC) -o $@ $(CFLAGS) $(OBJS) sdl/sdl.o $(LDFLAGS)
 
 clean:
-	rm -f $(COBJS) $(CPPOBJS) sdl/SDL.o VisualBoyAdvance
+	rm -f $(OBJS) sdl/sdl.o VisualBoyAdvance

@@ -20,6 +20,10 @@
 #ifndef VBA_GB_GB_H
 #define VBA_GB_GB_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define C_FLAG 0x10
 #define H_FLAG 0x20
 #define N_FLAG 0x40
@@ -39,8 +43,6 @@ typedef union {
 extern bool gbLoadRom(const char *);
 extern void gbEmulate(int);
 extern bool gbIsGameboyRom(const char *);
-extern void gbSoundReset();
-extern void gbSoundSetQuality(int);
 extern void gbReset();
 extern void gbCleanUp();
 extern bool gbWriteBatteryFile(const char *, bool);
@@ -49,11 +51,14 @@ extern bool gbWriteSaveState(const char *);
 extern bool gbWriteMemSaveState(char *, int);
 extern bool gbReadSaveState(const char *);
 extern bool gbReadMemSaveState(char *, int);
-extern void gbSgbRenderBorder();
 extern bool gbWritePNGFile(const char *);
 extern bool gbWriteBMPFile(const char *);
 extern bool gbReadGSASnapshot(const char *);
 
 extern struct EmulatedSystem GBSystem;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

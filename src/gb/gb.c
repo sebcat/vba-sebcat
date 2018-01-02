@@ -23,12 +23,12 @@
 
 #include "../system.h"
 #include "../NLS.h"
-#include "GB.h"
-#include "gbCheats.h"
-#include "gbGlobals.h"
-#include "gbMemory.h"
-#include "gbSGB.h"
-#include "gbSound.h"
+#include "gb.h"
+#include "gb_cheats.h"
+#include "gb_globals.h"
+#include "gb_memory.h"
+#include "gb_sgb.h"
+#include "gb_sound.h"
 #include "../unzip.h"
 #include "../util.h"
 
@@ -53,12 +53,12 @@ void (*mapperRAM)(u16,u8) = NULL;
 u8 (*mapperReadRAM)(u16) = NULL;
 
 // registers
-gbRegister PC;
-gbRegister SP;
-gbRegister AF;
-gbRegister BC;
-gbRegister DE;
-gbRegister HL;
+static gbRegister PC;
+static gbRegister SP;
+static gbRegister AF;
+static gbRegister BC;
+static gbRegister DE;
+static gbRegister HL;
 u16 IFF;
 // 0xff04
 u8 register_DIV   = 0;
@@ -105,19 +105,32 @@ u8 register_SVBK  = 0;
 // 0xffff
 u8 register_IE    = 0;
 
+#define DFL_GBDIV_CLOCK_TICKS          64
+#define DFL_GBLCD_MODE_0_CLOCK_TICKS   51
+#define DFL_GBLCD_MODE_1_CLOCK_TICKS   1140
+#define DFL_GBLCD_MODE_2_CLOCK_TICKS   20
+#define DFL_GBLCD_MODE_3_CLOCK_TICKS   43
+#define DFL_GBLY_INCREMENT_CLOCK_TICKS 114
+#define DFL_GBTIMER_MODE_0_CLOCK_TICKS 256
+#define DFL_GBTIMER_MODE_1_CLOCK_TICKS 4
+#define DFL_GBTIMER_MODE_2_CLOCK_TICKS 16
+#define DFL_GBTIMER_MODE_3_CLOCK_TICKS 64
+#define DFL_GBSERIAL_CLOCK_TICKS       128
+#define DFL_GBSYNCHRONIZE_CLOCK_TICKS  52920
+
 // ticks definition
-int GBDIV_CLOCK_TICKS          = 64;
-int GBLCD_MODE_0_CLOCK_TICKS   = 51;
-int GBLCD_MODE_1_CLOCK_TICKS   = 1140;
-int GBLCD_MODE_2_CLOCK_TICKS   = 20;
-int GBLCD_MODE_3_CLOCK_TICKS   = 43;
-int GBLY_INCREMENT_CLOCK_TICKS = 114;
-int GBTIMER_MODE_0_CLOCK_TICKS = 256;
-int GBTIMER_MODE_1_CLOCK_TICKS = 4;
-int GBTIMER_MODE_2_CLOCK_TICKS = 16;
-int GBTIMER_MODE_3_CLOCK_TICKS = 64;
-int GBSERIAL_CLOCK_TICKS       = 128;
-int GBSYNCHRONIZE_CLOCK_TICKS  = 52920;
+static int GBDIV_CLOCK_TICKS          = DFL_GBDIV_CLOCK_TICKS;
+static int GBLCD_MODE_0_CLOCK_TICKS   = DFL_GBLCD_MODE_0_CLOCK_TICKS;
+static int GBLCD_MODE_1_CLOCK_TICKS   = DFL_GBLCD_MODE_1_CLOCK_TICKS;
+static int GBLCD_MODE_2_CLOCK_TICKS   = DFL_GBLCD_MODE_2_CLOCK_TICKS;
+static int GBLCD_MODE_3_CLOCK_TICKS   = DFL_GBLCD_MODE_3_CLOCK_TICKS;
+static int GBLY_INCREMENT_CLOCK_TICKS = DFL_GBLY_INCREMENT_CLOCK_TICKS;
+static int GBTIMER_MODE_0_CLOCK_TICKS = DFL_GBTIMER_MODE_0_CLOCK_TICKS;
+static int GBTIMER_MODE_1_CLOCK_TICKS = DFL_GBTIMER_MODE_1_CLOCK_TICKS;
+static int GBTIMER_MODE_2_CLOCK_TICKS = DFL_GBTIMER_MODE_2_CLOCK_TICKS;
+static int GBTIMER_MODE_3_CLOCK_TICKS = DFL_GBTIMER_MODE_3_CLOCK_TICKS;
+static int GBSERIAL_CLOCK_TICKS       = DFL_GBSERIAL_CLOCK_TICKS;
+static int GBSYNCHRONIZE_CLOCK_TICKS  = DFL_GBSYNCHRONIZE_CLOCK_TICKS;
 
 // state variables
 
@@ -135,10 +148,10 @@ int gbTimerClockTicks = 0;
 int gbTimerMode = 0;
 // lcd
 int gbLcdMode = 2;
-int gbLcdTicks = GBLCD_MODE_2_CLOCK_TICKS;
+int gbLcdTicks = DFL_GBLCD_MODE_2_CLOCK_TICKS;
 int gbLcdLYIncrementTicks = 0;
 // div
-int gbDivTicks = GBDIV_CLOCK_TICKS;
+int gbDivTicks = DFL_GBDIV_CLOCK_TICKS;
 // cgb
 int gbVramBank = 0;
 int gbWramBank = 1;
@@ -155,7 +168,7 @@ int gbFrameSkipCount = 0;
 u32 gbLastTime = 0;
 u32 gbElapsedTime = 0;
 u32 gbTimeNow = 0;
-int gbSynchronizeTicks = GBSYNCHRONIZE_CLOCK_TICKS;
+int gbSynchronizeTicks = DFL_GBSYNCHRONIZE_CLOCK_TICKS;
 // emulator features
 int gbBattery = 0;
 int gbCaptureNumber = 0;
@@ -564,7 +577,7 @@ void gbGenFilter()
   }
 }
 
-bool gbIsGameboyRom(char * file)
+bool gbIsGameboyRom(const char * file)
 {
   if(strlen(file) > 4) {
     char * p = strrchr(file,'.');
@@ -2111,7 +2124,7 @@ variable_desc gbSaveGameStruct[] = {
 };
 
 
-static bool gbWriteSaveState(gzFile gzFile)
+static bool gbWriteSaveStateGZ(gzFile gzFile)
 {
   utilWriteInt(gzFile, GBSAVE_GAME_VERSION);
 
@@ -2165,7 +2178,7 @@ bool gbWriteMemSaveState(char *memory, int available)
     return false;
   }
 
-  bool res = gbWriteSaveState(gzFile);
+  bool res = gbWriteSaveStateGZ(gzFile);
 
   long pos = utilGzMemTell(gzFile)+8;
 
@@ -2184,13 +2197,13 @@ bool gbWriteSaveState(const char *name)
   if(gzFile == NULL)
     return false;
   
-  bool res = gbWriteSaveState(gzFile);
+  bool res = gbWriteSaveStateGZ(gzFile);
   
   utilGzClose(gzFile);
   return res;
 }
 
-static bool gbReadSaveState(gzFile gzFile)
+static bool gbReadSaveStateGZ(gzFile gzFile)
 {
   int version = utilReadInt(gzFile);
 
@@ -2361,7 +2374,7 @@ bool gbReadMemSaveState(char *memory, int available)
 {
   gzFile gzFile = utilMemGzOpen(memory, available, "r");
 
-  bool res = gbReadSaveState(gzFile);
+  bool res = gbReadSaveStateGZ(gzFile);
 
   utilGzClose(gzFile);
 
@@ -2376,7 +2389,7 @@ bool gbReadSaveState(const char *name)
     return false;
   }
   
-  bool res = gbReadSaveState(gzFile);
+  bool res = gbReadSaveStateGZ(gzFile);
   
   utilGzClose(gzFile);
   
@@ -2670,10 +2683,10 @@ void gbEmulate(int ticksToStop)
         opcode = gbReadOpcode(PC.W++);
         clockTicks = gbCyclesCB[opcode];
         switch(opcode) {
-#include "gbCodesCB.h"
+#include "gb_codes_cb.h"
         }
         break;
-#include "gbCodes.h"    
+#include "gb_codes.h"
       }
     }
 
@@ -3190,3 +3203,4 @@ struct EmulatedSystem GBSystem = {
   1000,
 #endif
 };
+

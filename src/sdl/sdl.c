@@ -37,8 +37,9 @@
 #include "../text.h"
 #include "../unzip.h"
 #include "../util.h"
-#include "../gb/GB.h"
-#include "../gb/gbGlobals.h"
+#include "../gb/gb.h"
+#include "../gb/gb_globals.h"
+#include "../gb/gb_sgb.h"
 
 #ifndef WIN32
 # include <unistd.h>
@@ -50,7 +51,6 @@
 
 #define DELTA_SIZE (322*242*4)
 
-extern "C" {
 extern void MotionBlur(u8*,u32,u8*,u8*,u32,int,int);
 extern void MotionBlur32(u8*,u32,u8*,u8*,u32,int,int);
 extern void Pixelate(u8*,u32,u8*,u8*,u32,int,int);
@@ -92,15 +92,14 @@ extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
 extern void debuggerOutput(const char *, u32);
-}
 
 extern bool soundEcho;
 extern bool soundLowPass;
 extern bool soundReverse;
 
-void Init_Overlay(SDL_Surface *surface, int overlaytype);
+static void Init_Overlay(SDL_Surface *surface, int overlaytype);
 void Quit_Overlay(void);
-void Draw_Overlay(SDL_Surface *surface, int size);
+static void Draw_Overlay(SDL_Surface *surface, int size);
 
 extern void CPUUpdateRenderBuffers(bool);
 
@@ -3153,14 +3152,14 @@ void Quit_Overlay(void)
 /* NOTE: These RGB conversion functions are not intended for speed,
    only as examples.
 */
-inline void RGBtoYUV(Uint8 *rgb, int *yuv)
+static inline void RGBtoYUV(Uint8 *rgb, int *yuv)
 {
   yuv[0] = (int)((0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + 16);
   yuv[1] = (int)(128 - (0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]));
   yuv[2] = (int)(128 + (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]));
 }
 
-inline void ConvertRGBtoYV12(SDL_Overlay *o)
+static inline void ConvertRGBtoYV12(SDL_Overlay *o)
 {
   int x,y;
   int yuv[3];
@@ -3195,7 +3194,7 @@ inline void ConvertRGBtoYV12(SDL_Overlay *o)
   SDL_UnlockYUVOverlay(o);
 }
 
-inline void ConvertRGBtoIYUV(SDL_Overlay *o)
+static inline void ConvertRGBtoIYUV(SDL_Overlay *o)
 {
   int x,y;
   int yuv[3];
@@ -3230,7 +3229,7 @@ inline void ConvertRGBtoIYUV(SDL_Overlay *o)
   SDL_UnlockYUVOverlay(o);
 }
 
-inline void ConvertRGBtoUYVY(SDL_Overlay *o)
+static inline void ConvertRGBtoUYVY(SDL_Overlay *o)
 {
   int x,y;
   int yuv[3];
@@ -3257,7 +3256,7 @@ inline void ConvertRGBtoUYVY(SDL_Overlay *o)
   SDL_UnlockYUVOverlay(o);
 }
 
-inline void ConvertRGBtoYVYU(SDL_Overlay *o)
+static inline void ConvertRGBtoYVYU(SDL_Overlay *o)
 {
   int x,y;
   int yuv[3];
@@ -3286,7 +3285,7 @@ inline void ConvertRGBtoYVYU(SDL_Overlay *o)
   SDL_UnlockYUVOverlay(o);
 }
 
-inline void ConvertRGBtoYUY2(SDL_Overlay *o)
+static inline void ConvertRGBtoYUY2(SDL_Overlay *o)
 {
   int x,y;
   int yuv[3];
@@ -3315,7 +3314,7 @@ inline void ConvertRGBtoYUY2(SDL_Overlay *o)
   SDL_UnlockYUVOverlay(o);
 }
 
-inline void Convert32bit(SDL_Surface *display)
+static inline void Convert32bit(SDL_Surface *display)
 {
   switch(overlay->format) {
   case SDL_YV12_OVERLAY:
@@ -3342,7 +3341,7 @@ inline void Convert32bit(SDL_Surface *display)
 }
 
 
-inline void Draw_Overlay(SDL_Surface *display, int size)
+void Draw_Overlay(SDL_Surface *display, int size)
 {
   SDL_LockYUVOverlay(overlay);
   

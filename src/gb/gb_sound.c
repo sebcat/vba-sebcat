@@ -20,14 +20,12 @@
 
 #include "../system.h"
 #include "../util.h"
-#include "gbGlobals.h"
-#include "gbSound.h"
+#include "gb_globals.h"
+#include "gb_sound.h"
 
-extern "C" {
 extern bool soundInit();
 extern void soundShutdown();
 extern void soundResume();
-}
 
 extern u8 soundBuffer[6][735];
 extern u16 soundFinalWave[1470];

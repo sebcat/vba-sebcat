@@ -18,8 +18,8 @@
 
 #include "../gba.h"
 #include "../port.h"
-#include "gbGlobals.h"
-#include "gbMemory.h"
+#include "gb_globals.h"
+#include "gb_memory.h"
 
 mapperMBC1 gbDataMBC1 = {
   0, // RAM enable

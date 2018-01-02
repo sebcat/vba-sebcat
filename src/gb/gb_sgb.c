@@ -22,8 +22,8 @@
 #include "../system.h"
 #include "../port.h"
 #include "../util.h"
-#include "GB.h"
-#include "gbGlobals.h"
+#include "gb.h"
+#include "gb_globals.h"
 
 extern u8 *pix;
 extern bool speedup;
@@ -332,7 +332,7 @@ void gbSgbPicture()
     gbSgbCGBSupport = 0;
 }
 
-void gbSgbSetPalette(int a,int b,u16 *p)
+static void gbSgbSetPalette(int a,int b,u16 *p)
 {
   u16 bit00 = READ16LE(p++);
   int i;
@@ -376,7 +376,7 @@ void gbSgbSetATF(int n)
   }
 }
 
-void gbSgbSetPalette()
+static void gbSgbSetPaletteIndirect()
 {
   u16 pal = READ16LE((((u16 *)&gbSgbPacket[1])))&511;
   memcpy(&gbPalette[0], &gbSgbSCPPalette[pal*4], 4 * sizeof(u16));
@@ -725,7 +725,7 @@ void gbSgbCommand()
     gbSgbAttributeCharacter();
     break;
   case 0x0a:
-    gbSgbSetPalette();
+    gbSgbSetPaletteIndirect();
     break;
   case 0x0b:
     gbSgbScpPalette();

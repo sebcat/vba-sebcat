@@ -17,6 +17,13 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef GB_SGB_H__
+#define GB_SGB_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void gbSgbInit();
 void gbSgbShutdown();
 void gbSgbCommand();
@@ -36,4 +43,8 @@ extern int gbSgbPacketTimeout;
 extern u8  gbSgbReadingController;
 extern int gbSgbFourPlayers;
 
+#ifdef __cplusplus
+}
+#endif
 
+#endif

@@ -17,23 +17,30 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef GB_MEMORY_H__
+#define GB_MEMORY_H__
+
 #include <time.h>
 
-struct mapperMBC1 {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef struct mapperMBC1 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
   int mapperMemoryModel;
   int mapperROMHighAddress;
   int mapperRAMAddress;
-};
+} mapperMBC1;
 
-struct mapperMBC2 {
+typedef struct mapperMBC2 {
   int mapperRAMEnable;
   int mapperROMBank;
-};
+} mapperMBC2;
 
-struct mapperMBC3 {
+typedef struct mapperMBC3 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
@@ -51,18 +58,18 @@ struct mapperMBC3 {
   int mapperLDays;
   int mapperLControl;
   time_t mapperLastTime;
-};
+} mapperMBC3;
 
-struct mapperMBC5 {
+typedef struct mapperMBC5 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
   int mapperROMHighAddress;
   int mapperRAMAddress;
   int isRumbleCartridge;
-};
+} mapperMBC5;
 
-struct mapperMBC7 {
+typedef struct mapperMBC7 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
@@ -77,18 +84,18 @@ struct mapperMBC7 {
   int address;
   int writeEnable;
   int value;
-};
+} mapperMBC7;
 
-struct mapperHuC1 {
+typedef struct mapperHuC1 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
   int mapperMemoryModel;
   int mapperROMHighAddress;
   int mapperRAMAddress;
-};
+} mapperHuC1;
 
-struct mapperHuC3 {
+typedef struct mapperHuC3 {
   int mapperRAMEnable;
   int mapperROMBank;
   int mapperRAMBank;
@@ -104,7 +111,7 @@ struct mapperHuC3 {
   int mapperRegister6;
   int mapperRegister7;
   int mapperRegister8;
-};
+} mapperHuC3;
 
 extern mapperMBC1 gbDataMBC1;
 extern mapperMBC2 gbDataMBC2;
@@ -143,7 +150,8 @@ extern void memoryUpdateMapMBC7();
 extern void memoryUpdateMapHuC1();
 extern void memoryUpdateMapHuC3();
 
+#ifdef __cplusplus
+}
+#endif
 
-
-
-
+#endif

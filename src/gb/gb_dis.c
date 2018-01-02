@@ -20,7 +20,7 @@
 #include <string.h>
 
 #include "../system.h"
-#include "gbGlobals.h"
+#include "gb_globals.h"
 
 typedef struct {
   u8 mask;
