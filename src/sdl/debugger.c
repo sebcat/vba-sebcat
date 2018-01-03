@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "../gba.h"
 #include "../port.h"
@@ -219,26 +220,26 @@ void debuggerPrintBaseType(Type *t, u32 value, u32 location,
     case DW_ATE_signed:
       switch(debuggerRadix) {
       case 0:
-        printf("%lld", value);
+        printf("%"PRId64, (s64)value);
         break;
       case 1:
-        printf("0x%llx", value);
+        printf("0x%"PRIx64, value);
         break;
       case 2:
-        printf("0%llo", value);
+        printf("0%"PRIo64, value);
         break;
       }
       break;
     case DW_ATE_unsigned:
       switch(debuggerRadix) {
       case 0:
-        printf("%llu", value);
+        printf("%"PRIu64, value);
         break;
       case 1:
-        printf("0x%llx", value);
+        printf("0x%"PRIx64, value);
         break;
       case 2:
-        printf("0%llo", value);
+        printf("0%"PRIo64, value);
         break;
       }
       break;
