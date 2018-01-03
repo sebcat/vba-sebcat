@@ -1,10 +1,10 @@
 .PHONY: all clean
 
-LDFLAGS+= \
-    $$(pkg-config --libs sdl libpng) \
-    -lm
+LDADD != pkg-config --libs sdl libpng zlib
 
-CFLAGS+= \
+LDFLAGS += $(LDADD) -lm
+
+CFLAGS += \
     -Wall \
     -Werror \
     -I/usr/local/include \
