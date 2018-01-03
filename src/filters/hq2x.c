@@ -27,8 +27,8 @@
  * file, but you are not obligated to do so.  If you do not wish to
  * do so, delete this exception statement from your version.
  */
-#include "system.h"
-#include "interp.h"
+#include "../system.h"
+#include "../interp.h"
 
 /***************************************************************************/
 /* HQ2x C implementation */
@@ -113,7 +113,7 @@ static void hq2x_16_def(u16* dst0, u16* dst1, const u16* src0, const u16* src1, 
 #define I151(p0,p1) interp_16_151(c[p0], c[p1])
 
     switch (mask) {
-#include "hq2x.h"
+#include "hq2x_int.h"
     }
 
 #undef P0
@@ -223,7 +223,7 @@ static void hq2x_32_def(u32* dst0, u32* dst1, const u32* src0, const u32* src1, 
 #define I151(p0,p1) interp_32_151(c[p0], c[p1])
 
     switch (mask) {
-#include "hq2x.h"
+#include "hq2x_int.h"
     }
 
 #undef P0
@@ -340,7 +340,7 @@ static void lq2x_16_def(u16* dst0, u16* dst1, const u16* src0, const u16* src1, 
 #define I151(p0,p1) interp_16_151(c[p0], c[p1])
 
     switch (mask) {
-#include "lq2x.h"
+#include "lq2x_int.h"
     }
 
 #undef P0
@@ -450,7 +450,7 @@ static void lq2x_32_def(u32* dst0, u32* dst1, const u32* src0, const u32* src1, 
 #define I151(p0,p1) interp_32_151(c[p0], c[p1])
 
     switch (mask) {
-#include "lq2x.h"
+#include "lq2x_int.h"
     }
 
 #undef P0

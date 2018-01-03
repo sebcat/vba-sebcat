@@ -13,9 +13,9 @@ CFLAGS += \
     -DSYSCONFDIR=\"/etc\"
 
 SRCS = \
-    2xSaI.c \
+    filters/2xSaI.c \
     agbprint.c \
-    admame.c \
+    filters/admame.c \
     bios.c \
     cheat_search.c \
     cheats.c \
@@ -36,12 +36,12 @@ SRCS = \
     gba.c \
     gfx.c \
     globals.c \
-    pixel.c \
+    filters/pixel.c \
     sound.c \
-    bilinear.c \
+    filters/bilinear.c \
     elf.c \
     armdis.c \
-    scanline.c \
+    filters/scanline.c \
     mode0.c \
     mode1.c \
     mode2.c \
@@ -49,13 +49,13 @@ SRCS = \
     mode4.c \
     mode5.c \
     memgzio.c \
-    hq2x.c \
-    simple2x.c \
+    filters/hq2x.c \
+    filters/simple2x.c \
     text.c \
     rtc.c \
     sram.c \
-    motionblur.c \
-    interframe.c \
+    filters/motionblur.c \
+    filters/interframe.c \
     sdl/debugger.c \
     remote.c \
     unzip.c \
@@ -86,9 +86,9 @@ HDRS = \
     elf.h \
     expr.h \
     expr_node.h \
-    hq2x.h \
+    filters/hq2x_int.h \
     interp.h \
-    lq2x.h \
+    filters/lq2x_int.h \
     memgzio.h \
     thumb.h \
     unzip.h \

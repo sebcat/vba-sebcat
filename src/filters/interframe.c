@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include "system.h"
+#include "../system.h"
 
 /*
  * Thanks to Kawaks' Mr. K for the code

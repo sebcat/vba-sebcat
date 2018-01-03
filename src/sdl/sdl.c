@@ -32,7 +32,6 @@
 #include "../agbprint.h"
 #include "../flash.h"
 #include "../port.h"
-#include "debugger.h"
 #include "../rtc.h"
 #include "../sound.h"
 #include "../text.h"
@@ -41,6 +40,8 @@
 #include "../gb/gb.h"
 #include "../gb/gb_globals.h"
 #include "../gb/gb_sgb.h"
+
+#include "debugger.h"
 
 #define PATH_SEP ":"
 #define FILE_SEP '/'

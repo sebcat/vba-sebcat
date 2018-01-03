@@ -16,15 +16,16 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "system.h"
+#include "../system.h"
 
 extern int RGB_LOW_BITS_MASK;
 
-void Pixelate(u8 *srcPtr, u32 srcPitch, u8 *deltaPtr,
-          u8 *dstPtr, u32 dstPitch, int width, int height)
+void MotionBlur(u8 *srcPtr, u32 srcPitch, u8 *deltaPtr,
+                u8 *dstPtr, u32 dstPitch, int width, int height)
 {
   u8 *nextLine, *finish;
   u32 colorMask = ~(RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 16));
+  u32 lowPixelMask = RGB_LOW_BITS_MASK;
   
   nextLine = dstPtr + dstPitch;
   
@@ -47,41 +48,62 @@ void Pixelate(u8 *srcPtr, u32 srcPitch, u8 *deltaPtr,
       currentDelta = nextDelta;
       nextPixel = *bP++;
       nextDelta = *xP++;
-      
-      if ((nextPixel != nextDelta) || (currentPixel != currentDelta)) {
-        u32 colorA, colorB, product;
+
+      if(currentPixel != currentDelta) {
+        u32 colorA, product, colorB;
         
         *(xP - 2) = currentPixel;
 #ifdef WORDS_BIGENDIAN
         colorA = currentPixel >> 16;
-        colorB = currentPixel & 0xffff;
+        colorB = currentDelta >> 16;
 #else
         colorA = currentPixel & 0xffff;
-        colorB = currentPixel >> 16;
+        colorB = currentDelta & 0xffff;
 #endif
-        product = (((colorA & colorMask) >> 1) & colorMask) >> 1;
+
+        product =   ((((colorA & colorMask) >> 1) +
+                          ((colorB & colorMask) >> 1) +
+                          (colorA & colorB & lowPixelMask)));
         
+        *(dP) = product | product << 16;
+        *(nL) = product | product << 16;
+
 #ifdef WORDS_BIGENDIAN
-        *(nL) = (product << 16) | (product);
-        *(dP) = (colorA << 16) | product;
+        colorA = (currentPixel & 0xffff);
+        colorB = (currentDelta & 0xffff);
 #else
-        *(nL) = product | (product << 16);
-        *(dP) = colorA | (product << 16);
+        colorA = currentPixel >> 16;
+        colorB = currentDelta >> 16;
+#endif
+        product = ((((colorA & colorMask) >> 1) +
+                  ((colorB & colorMask) >> 1) +
+                    (colorA & colorB & lowPixelMask)));
+        
+        *(dP + 1) = product | product << 16;
+        *(nL + 1) = product | product << 16;
+      } else {
+        u32 colorA, product;
+        
+        *(xP - 2) = currentPixel;
+#ifdef WORDS_BIGENDIAN
+        colorA = currentPixel >> 16;
+#else
+        colorA = currentPixel & 0xffff;
 #endif
         
+        product = colorA;
+        
+        *(dP) = product | product << 16;
+        *(nL) = product | product << 16;
 #ifdef WORDS_BIGENDIAN
-        colorA = nextPixel >> 16;
+        colorA = (currentPixel & 0xffff);
 #else
-        colorA = nextPixel & 0xffff;
+        colorA = currentPixel >> 16;
 #endif
-        product = (((colorB & colorMask) >> 1) & colorMask) >> 1;
-#ifdef WORDS_BIGENDIAN
-        *(nL + 1) = (product << 16) | (product);
-        *(dP + 1) = (colorB << 16) | (product);
-#else
-        *(nL + 1) = (product) | (product << 16);
-        *(dP + 1) = (colorB) | (product << 16);
-#endif
+        product = colorA;
+        
+        *(dP + 1) = product | product << 16;
+        *(nL + 1) = product | product << 16;        
       }
       
       dP += 2;
@@ -96,52 +118,72 @@ void Pixelate(u8 *srcPtr, u32 srcPitch, u8 *deltaPtr,
   while (--height);
 }
 
-void Pixelate32(u8 *srcPtr, u32 srcPitch, u8 * deltaPtr,
-                u8 *dstPtr, u32 dstPitch, int width, int height)
+void MotionBlur32(u8 *srcPtr, u32 srcPitch, u8 *deltaPtr,
+                  u8 *dstPtr, u32 dstPitch, int width, int height)
 {
   u8 *nextLine, *finish;
   u32 colorMask = ~RGB_LOW_BITS_MASK;
+  u32 lowPixelMask = RGB_LOW_BITS_MASK;
   
   nextLine = dstPtr + dstPitch;
   
   do {
     u32 *bP = (u32 *) srcPtr;
-    //    u32 *xP = (u32 *) deltaPtr;
+    u32 *xP = (u32 *) deltaPtr;
     u32 *dP = (u32 *) dstPtr;
     u32 *nL = (u32 *) nextLine;
     u32 currentPixel;
     u32 nextPixel;
+    u32 currentDelta;
+    u32 nextDelta;
     
     finish = (u8 *) bP + ((width+1) << 2);
     nextPixel = *bP++;
+    nextDelta = *xP++;
     
     do {
       currentPixel = nextPixel;
+      currentDelta = nextDelta;
       nextPixel = *bP++;
-      
-      u32 colorA, colorB, product;
-        
-      colorA = currentPixel;
-      colorB = nextPixel;
+      nextDelta = *xP++;
 
-      product = (((colorA & colorMask) >> 1) & colorMask) >> 1;
+      u32 colorA, product, colorB;
+
+      *(xP - 2) = currentPixel;
+      colorA = currentPixel;
+      colorB = currentDelta;
+      
+      product =   ((((colorA & colorMask) >> 1) +
+                    ((colorB & colorMask) >> 1) +
+                    (colorA & colorB & lowPixelMask)));
+      
+      *(dP) = product;
+      *(dP+1) = product;
       *(nL) = product;
       *(nL+1) = product;
-      *(dP) = colorA;
-      *(dP+1) = product;
 
-      nextPixel = *bP++;
+      *(xP - 1) = nextPixel;
+
       colorA = nextPixel;
-      product = (((colorB & colorMask) >> 1) & colorMask) >> 1;
+      colorB = nextDelta;
+      
+      product = ((((colorA & colorMask) >> 1) +
+                  ((colorB & colorMask) >> 1) +
+                  (colorA & colorB & lowPixelMask)));
+      
+      *(dP + 2) = product;
+      *(dP + 3) = product;
       *(nL + 2) = product;
       *(nL + 3) = product;
-      *(dP + 2) = colorB;
-      *(dP + 3) = product;
+
+      nextPixel = *bP++;
+      nextDelta = *xP++;
       
       dP += 4;
       nL += 4;
     } while ((u8 *) bP < finish);
     
+    deltaPtr += srcPitch;
     srcPtr += srcPitch;
     dstPtr += dstPitch << 1;
     nextLine += dstPitch << 1;

@@ -22,7 +22,7 @@
  **	Written: 6/14/00 - JSF
  **/
 
-#include "system.h"
+#include "../system.h"
 
 static u8 row_cur[3*322];
 static u8 row_next[3*322];

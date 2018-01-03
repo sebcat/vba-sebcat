@@ -1,5 +1,5 @@
-#include "system.h"
-#include "port.h"
+#include "../system.h"
+#include "../port.h"
 
 static u32 colorMask = 0xF7DEF7DE;
 static u32 lowPixelMask = 0x08210821;
