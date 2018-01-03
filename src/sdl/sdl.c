@@ -51,6 +51,10 @@
 
 #define DELTA_SIZE (322*242*4)
 
+#ifndef SYSCONFDIR
+#define SYSCONFDIR "/etc"
+#endif
+
 extern void MotionBlur(u8*,u32,u8*,u8*,u32,int,int);
 extern void MotionBlur32(u8*,u32,u8*,u8*,u32,int,int);
 extern void Pixelate(u8*,u32,u8*,u8*,u32,int,int);
