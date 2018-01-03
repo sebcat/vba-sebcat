@@ -10,7 +10,6 @@ CFLAGS+= \
     -I/usr/local/include \
     -I/usr/local/include/libpng16/ \
     -DSDL \
-    -DC_CORE \
     -DSYSCONFDIR=\"/etc\"
 
 SRCS = \

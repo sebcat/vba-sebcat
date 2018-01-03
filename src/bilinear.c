@@ -93,13 +93,13 @@ void Bilinear(u8 *srcPtr, u32 srcPitch, u8 * deltaPtr,
   for(int y = 0; y < height; y++) {
     u16 *from_orig = from;
     u16 *to_orig = to;
-    
+
     if (y+1 < height)
-      fill_rgb_row_16(from+width+2, from_width, rgb_row_next, 
+      fill_rgb_row_16(from+width+2, from_width, rgb_row_next,
                    width+1);
     else
       fill_rgb_row_16(from, from_width, rgb_row_next, width+1);
-    
+
     // every pixel in the src region, is extended to 4 pixels in the
     // destination, arranged in a square 'quad'; if the current src
     // pixel is 'a', then in what follows 'b' is the src pixel to the
