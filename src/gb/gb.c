@@ -551,7 +551,7 @@ u8 ZeroTable[] = {
 #define GBSAVE_GAME_VERSION_10 10
 #define GBSAVE_GAME_VERSION GBSAVE_GAME_VERSION_10
 
-int inline gbGetValue(int min,int max,int v)
+static inline int gbGetValue(int min,int max,int v)
 {
   return (int)(min+(float)(max-min)*(2.0*(v/31.0)-(v/31.0)*(v/31.0)));
 }

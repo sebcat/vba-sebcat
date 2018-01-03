@@ -476,27 +476,32 @@ variable_desc saveGameStruct[] = {
 int cpuSavedTicks = 0;
 
 
-inline int CPUUpdateTicksAccess32(u32 address)
+static inline int CPUUpdateTicksAccess32(u32 address)
 {
   return memoryWait32[(address>>24)&15];
 }
 
-inline int CPUUpdateTicksAccess16(u32 address)
+static inline int CPUUpdateTicksAccess16(u32 address)
 {
   return memoryWait[(address>>24)&15];
 }
 
-inline int CPUUpdateTicksAccessSeq32(u32 address)
+static inline int CPUUpdateTicksAccessSeq32(u32 address)
 {
   return memoryWaitSeq32[(address>>24)&15];
 }
 
-inline int CPUUpdateTicksAccessSeq16(u32 address)
+/*
+
+unused
+
+static inline int CPUUpdateTicksAccessSeq16(u32 address)
 {
   return memoryWaitSeq[(address>>24)&15];
 }
+*/
 
-inline int CPUUpdateTicks()
+static inline int CPUUpdateTicks()
 {
   int cpuLoopTicks = lcdTicks;
   
