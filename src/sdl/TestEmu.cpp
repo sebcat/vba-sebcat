@@ -23,15 +23,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "../AutoBuild.h"
+#include "../auto_build.h"
 
-#include "../GBA.h"
+#include "../gba.h"
 #include "debugger.h"
-#include "../Sound.h"
+#include "../sound.h"
 #include "../unzip.h"
-#include "../Util.h"
-#include "../gb/GB.h"
-#include "../gb/gbGlobals.h"
+#include "../util.h"
+#include "../gb/gb.h"
+#include "../gb/gb_globals.h"
 
 #ifndef WIN32
 # include <unistd.h>
@@ -41,9 +41,6 @@
 # define GETCWD _getcwd
 #endif // WIN32
 
-#ifdef MMX
-extern "C" bool cpu_mmx;
-#endif
 extern bool soundEcho;
 extern bool soundLowPass;
 extern bool soundReverse;

@@ -128,7 +128,6 @@ static int filter = 0;
 static u8 *delta = NULL;
 
 static int sdlPrintUsage = 0;
-static int disableMMX = 0;
 
 static int cartridgeType = 3;
 static int sizeOption = 0;
@@ -302,7 +301,6 @@ static struct option sdlOptions[] = {
   { "no-auto-frameskip", no_argument, &autoFrameSkip, 0 },
   { "no-debug", no_argument, 0, 'N' },
   { "no-ips", no_argument, &sdlAutoIPS, 0 },
-  { "no-mmx", no_argument, &disableMMX, 1 },
   { "no-pause-when-inactive", no_argument, &pauseWhenInactive, 0 },
   { "no-rtc", no_argument, &sdlRtcEnable, 0 },
   { "no-show-speed", no_argument, &showSpeed, 0 },
@@ -875,10 +873,6 @@ static void sdlReadPreferences(FILE *f)
       throttle = sdlFromHex(value);
       if(throttle != 0 && (throttle < 5 || throttle > 1000))
         throttle = 0;
-    } else if(!strcmp(key, "disableMMX")) {
-#ifdef MMX
-      cpu_mmx = sdlFromHex(value) ? false : true;
-#endif
     } else if(!strcmp(key, "pauseWhenInactive")) {
       pauseWhenInactive = sdlFromHex(value) ? true : false;
     } else if(!strcmp(key, "agbPrint")) {
@@ -1587,7 +1581,6 @@ Long options only:\n\
       --no-agb-print           Disable AGBPrint support\n\
       --no-auto-frameskip      Disable auto frameskipping\n\
       --no-ips                 Do not apply IPS patch\n\
-      --no-mmx                 Disable MMX support\n\
       --no-pause-when-inactive Don't pause when inactive\n\
       --no-rtc                 Disable RTC support\n\
       --no-show-speed          Don't show emulation speed\n\
@@ -1807,11 +1800,6 @@ int main(int argc, char **argv)
     usage(argv[0]);
     exit(-1);
   }
-
-#ifdef MMX
-  if(disableMMX)
-    cpu_mmx = 0;
-#endif
 
   if(rewindTimer)
     rewindMemory = (char *)malloc(8*REWIND_SIZE);
