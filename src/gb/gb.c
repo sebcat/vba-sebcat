@@ -2012,8 +2012,6 @@ bool gbReadGSASnapshot(const char *fileName)
     return false;
   }
   fseek(file, 0x13, SEEK_SET);
-  int read = 0;
-  int toRead = 0;
   switch(gbRom[0x147]) {
   case 0x03:
   case 0x0f:
@@ -2022,13 +2020,11 @@ bool gbReadGSASnapshot(const char *fileName)
   case 0x1b:
   case 0x1e:
   case 0xff:
-    read = fread(gbRam, 1, gbRamSize, file);
-    toRead = gbRamSize;
+    fread(gbRam, 1, gbRamSize, file);
     break;
   case 0x06:
   case 0x22:
-    read = fread(&gbMemory[0xa000],1,256,file);
-    toRead = 256;
+    fread(&gbMemory[0xa000],1,256,file);
     break;
   default:
     systemMessage(MSG_UNSUPPORTED_SNAPSHOT_FILE,
@@ -2036,10 +2032,10 @@ bool gbReadGSASnapshot(const char *fileName)
                   fileName);
     fclose(file);
     return false;
-  }    
+  }
   fclose(file);
   gbReset();
-  return true;  
+  return true;
 }
 
 variable_desc gbSaveGameStruct[] = {

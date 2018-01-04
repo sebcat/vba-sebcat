@@ -1304,6 +1304,8 @@ void elfParseLineInfo(CompileUnit *unit, u8 *top)
         break;
       }
     }
+    (void)basicBlock;
+    (void)col;
   }
   l->lines = (LineInfoItem *)realloc(l->lines, l->number*sizeof(LineInfoItem));
 }
@@ -2102,6 +2104,7 @@ u8 *elfParseBlock(u8 *data, ELFAbbrev *abbrev, CompileUnit *unit,
       }
     }
   }
+  (void)end;
   return data;  
 }
 
@@ -2353,6 +2356,7 @@ u8 *elfParseFunction(u8 *data, ELFAbbrev *abbrev, CompileUnit *unit,
       }
     }
   }
+  (void)mangled;
   return data;
 }
 

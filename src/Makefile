@@ -107,6 +107,10 @@ OBJS = ${SRCS:.c=.o}
 
 all: VisualBoyAdvance
 
+# workaround for set but unused C_OUT variable
+gba.o: gba.c arm-new.h thumb.h
+	$(CC) -Wno-unused-but-set-variable $(CFLAGS) -c -o gba.o gba.c
+
 $(SRCS): $(HDRS)
 VisualBoyAdvance: $(OBJS) sdl/sdl.o
 	$(CC) -o $@ $(CFLAGS) $(OBJS) sdl/sdl.o $(LDFLAGS)

@@ -531,7 +531,7 @@ void soundEvent8(u32 address, u8 data)
   case 0x9d:
   case 0x9e:
   case 0x9f:
-    sound3WaveRam[(sound3Bank*0x10)^0x10+(address&15)] = data;
+    sound3WaveRam[((sound3Bank*0x10)^0x10)+(address&15)] = data;
     break;
   }
 }
@@ -590,7 +590,7 @@ void soundEvent16(u32 address, u16 data)
   case 0x9a:
   case 0x9c:
   case 0x9e:
-    *((u16 *)&sound3WaveRam[(sound3Bank*0x10)^0x10+(address&14)]) = data;
+    *((u16 *)&sound3WaveRam[((sound3Bank*0x10)^0x10)+(address&14)]) = data;
     *((u16 *)&ioMem[address]) = data;    
     break;    
   }
