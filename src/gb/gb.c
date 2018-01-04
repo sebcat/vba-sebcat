@@ -38,19 +38,17 @@
 
 extern u8 *pix;
 extern bool speedup;
-
+extern u16 gbLineMix[160];
 bool gbUpdateSizes();
 
 // debugging
-bool memorydebug = false;
-char gbBuffer[2048];
-
-extern u16 gbLineMix[160];
+static bool memorydebug = false;
+static char gbBuffer[2048];
 
 // mappers
-void (*mapper)(u16,u8) = NULL;
-void (*mapperRAM)(u16,u8) = NULL;
-u8 (*mapperReadRAM)(u16) = NULL;
+static void (*mapper)(u16,u8) = NULL;
+static void (*mapperRAM)(u16,u8) = NULL;
+static u8 (*mapperReadRAM)(u16) = NULL;
 
 // registers
 static gbRegister PC;
@@ -59,21 +57,21 @@ static gbRegister AF;
 static gbRegister BC;
 static gbRegister DE;
 static gbRegister HL;
-u16 IFF;
+static u16 IFF;
 // 0xff04
-u8 register_DIV   = 0;
+static u8 register_DIV   = 0;
 // 0xff05
-u8 register_TIMA  = 0;
+static u8 register_TIMA  = 0;
 // 0xff06
-u8 register_TMA   = 0;
+static u8 register_TMA   = 0;
 // 0xff07
-u8 register_TAC   = 0;
+static u8 register_TAC   = 0;
 // 0xff0f
-u8 register_IF    = 0;
+static u8 register_IF    = 0;
 // 0xff40
 u8 register_LCDC  = 0;
 // 0xff41
-u8 register_STAT  = 0;
+static u8 register_STAT  = 0;
 // 0xff42
 u8 register_SCY   = 0;
 // 0xff43
@@ -81,9 +79,9 @@ u8 register_SCX   = 0;
 // 0xff44
 u8 register_LY    = 0;
 // 0xff45
-u8 register_LYC   = 0;
+static u8 register_LYC   = 0;
 // 0xff46
-u8 register_DMA   = 0;
+static u8 register_DMA   = 0;
 // 0xff4a
 u8 register_WY    = 0;
 // 0xff4b
@@ -91,19 +89,19 @@ u8 register_WX    = 0;
 // 0xff4f
 u8 register_VBK   = 0;
 // 0xff51
-u8 register_HDMA1 = 0;
+static u8 register_HDMA1 = 0;
 // 0xff52
-u8 register_HDMA2 = 0;
+static u8 register_HDMA2 = 0;
 // 0xff53
-u8 register_HDMA3 = 0;
+static u8 register_HDMA3 = 0;
 // 0xff54
-u8 register_HDMA4 = 0;
+static u8 register_HDMA4 = 0;
 // 0xff55
-u8 register_HDMA5 = 0;
+static u8 register_HDMA5 = 0;
 // 0xff70
-u8 register_SVBK  = 0;
+static u8 register_SVBK  = 0;
 // 0xffff
-u8 register_IE    = 0;
+static u8 register_IE    = 0;
 
 #define DFL_GBDIV_CLOCK_TICKS          64
 #define DFL_GBLCD_MODE_0_CLOCK_TICKS   51
@@ -135,48 +133,47 @@ static int GBSYNCHRONIZE_CLOCK_TICKS  = DFL_GBSYNCHRONIZE_CLOCK_TICKS;
 // state variables
 
 // interrupt
-int gbInterrupt = 0;
-int gbInterruptWait = 0;
+static int gbInterrupt = 0;
+static int gbInterruptWait = 0;
 // serial
-int gbSerialOn = 0;
-int gbSerialTicks = 0;
-int gbSerialBits = 0;
+static int gbSerialOn = 0;
+static int gbSerialTicks = 0;
+static int gbSerialBits = 0;
 // timer
-int gbTimerOn = 0;
-int gbTimerTicks = 0;
-int gbTimerClockTicks = 0;
-int gbTimerMode = 0;
+static int gbTimerOn = 0;
+static int gbTimerTicks = 0;
+static int gbTimerClockTicks = 0;
+static int gbTimerMode = 0;
 // lcd
-int gbLcdMode = 2;
-int gbLcdTicks = DFL_GBLCD_MODE_2_CLOCK_TICKS;
-int gbLcdLYIncrementTicks = 0;
+static int gbLcdMode = 2;
+static int gbLcdTicks = DFL_GBLCD_MODE_2_CLOCK_TICKS;
+static int gbLcdLYIncrementTicks = 0;
 // div
-int gbDivTicks = DFL_GBDIV_CLOCK_TICKS;
+static int gbDivTicks = DFL_GBDIV_CLOCK_TICKS;
 // cgb
-int gbVramBank = 0;
-int gbWramBank = 1;
-int gbHdmaSource = 0x0000;
-int gbHdmaDestination = 0x8000;
-int gbHdmaBytes = 0x0000;
-int gbHdmaOn = 0;
+static int gbVramBank = 0;
+static int gbWramBank = 1;
+static int gbHdmaSource = 0x0000;
+static int gbHdmaDestination = 0x8000;
+static int gbHdmaBytes = 0x0000;
+static int gbHdmaOn = 0;
 int gbSpeed = 0;
 // frame counting
-int gbFrameCount = 0;
+static int gbFrameCount = 0;
 int gbFrameSkip = 0;
-int gbFrameSkipCount = 0;
+static int gbFrameSkipCount = 0;
 // timing
-u32 gbLastTime = 0;
-u32 gbElapsedTime = 0;
-u32 gbTimeNow = 0;
-int gbSynchronizeTicks = DFL_GBSYNCHRONIZE_CLOCK_TICKS;
+static u32 gbLastTime = 0;
+static int gbSynchronizeTicks = DFL_GBSYNCHRONIZE_CLOCK_TICKS;
 // emulator features
-int gbBattery = 0;
-int gbCaptureNumber = 0;
-bool gbCapture = false;
-bool gbCapturePrevious = false;
-int gbJoymask[4] = { 0, 0, 0, 0 };
+static int gbBattery = 0;
+static int gbCaptureNumber = 0;
+static bool gbCapture = false;
+static bool gbCapturePrevious = false;
+static int gbJoymask[4] = { 0, 0, 0, 0 };
 
-int gbRomSizes[] = { 0x00008000, // 32K
+static int gbRomSizes[] = {
+                     0x00008000, // 32K
                      0x00010000, // 64K
                      0x00020000, // 128K
                      0x00040000, // 256K
@@ -186,7 +183,8 @@ int gbRomSizes[] = { 0x00008000, // 32K
                      0x00400000, // 4096K
                      0x00800000  // 8192K
 };
-int gbRomSizesMasks[] = { 0x00007fff,
+static int gbRomSizesMasks[] = {
+                          0x00007fff,
                           0x0000ffff,
                           0x0001ffff,
                           0x0003ffff,
@@ -197,7 +195,8 @@ int gbRomSizesMasks[] = { 0x00007fff,
                           0x007fffff
 };
 
-int gbRamSizes[6] = { 0x00000000, // 0K
+static int gbRamSizes[6] = {
+                      0x00000000, // 0K
                       0x00000800, // 2K
                       0x00002000, // 8K
                       0x00008000, // 32K
@@ -205,7 +204,8 @@ int gbRamSizes[6] = { 0x00000000, // 0K
                       0x00010000  // 64K
 };
 
-int gbRamSizesMasks[6] = { 0x00000000,
+static int gbRamSizesMasks[6] = {
+                           0x00000000,
                            0x000007ff,
                            0x00001fff,
                            0x00007fff,
@@ -213,7 +213,7 @@ int gbRamSizesMasks[6] = { 0x00000000,
                            0x0000ffff
 };
 
-int gbCycles[] = {
+static int gbCycles[] = {
 //  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
     1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,  // 0
     1, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,  // 1
@@ -233,7 +233,7 @@ int gbCycles[] = {
     3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4   // f
 };
 
-int gbCyclesCB[] = {
+static int gbCyclesCB[] = {
 //  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f   
     2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,  // 0
     2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,  // 1
@@ -253,7 +253,7 @@ int gbCyclesCB[] = {
     2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2   // f
 };
 
-u16 DAATable[] = {
+static u16 DAATable[] = {
   0x0080,0x0100,0x0200,0x0300,0x0400,0x0500,0x0600,0x0700,
   0x0800,0x0900,0x1020,0x1120,0x1220,0x1320,0x1420,0x1520,
   0x1000,0x1100,0x1200,0x1300,0x1400,0x1500,0x1600,0x1700,
@@ -512,7 +512,7 @@ u16 DAATable[] = {
   0x9250,0x9350,0x9450,0x9550,0x9650,0x9750,0x9850,0x9950,
 };
 
-u8 ZeroTable[] = {
+static u8 ZeroTable[] = {
   0x80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -3067,7 +3067,7 @@ void gbEmulate(int ticksToStop)
     if(soundOffFlag) {
       if(synchronize && !speedup) {
         synchronizeTicks -= clockTicks;
-        
+
         while(synchronizeTicks < 0) {
           synchronizeTicks += SYNCHRONIZE_CLOCK_TICKS;
           
