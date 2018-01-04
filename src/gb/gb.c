@@ -3157,7 +3157,7 @@ void gbEmulate(int ticksToStop)
             }
           } else {
             gbJoymask[0] = systemReadJoypad(-1);
-          }             
+          }
         }
       }
       return;
@@ -3166,37 +3166,23 @@ void gbEmulate(int ticksToStop)
 }
 
 struct EmulatedSystem GBSystem = {
-  // emuMain
-  gbEmulate,
-  // emuReset
-  gbReset,
-  // emuCleanUp
-  gbCleanUp,
-  // emuReadBattery
-  gbReadBatteryFile,
-  // emuWriteBattery
-  gbWriteBatteryFileExtendedSave,
-  // emuReadState
-  gbReadSaveState,
-  // emuWriteState
-  gbWriteSaveState,
-  // emuReadMemState
-  gbReadMemSaveState,
-  // emuWriteMemState
-  gbWriteMemSaveState,
-  // emuWritePNG
-  gbWritePNGFile,
-  // emuWriteBMP
-  gbWriteBMPFile,
-  // emuUpdateCPSR
-  NULL,
-  // emuHasDebugger
-  false,
-  // emuCount
+  .emuMain = gbEmulate,
+  .emuReset = gbReset,
+  .emuCleanUp = gbCleanUp,
+  .emuReadBattery = gbReadBatteryFile,
+  .emuWriteBattery = gbWriteBatteryFileExtendedSave,
+  .emuReadState = gbReadSaveState,
+  .emuWriteState = gbWriteSaveState,
+  .emuReadMemState = gbReadMemSaveState,
+  .emuWriteMemState = gbWriteMemSaveState,
+  .emuWritePNG = gbWritePNGFile,
+  .emuWriteBMP = gbWriteBMPFile,
+  .emuUpdateCPSR = NULL,
+  .emuHasDebugger = false,
 #ifdef FINAL_VERSION
-  70000/4,
+  .emuCount = 70000/4,
 #else
-  1000,
+  .emuCount = 1000,
 #endif
 };
 

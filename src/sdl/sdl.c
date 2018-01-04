@@ -80,22 +80,7 @@ static void Draw_Overlay(SDL_Surface *surface, int size);
 
 extern void CPUUpdateRenderBuffers(bool);
 
-struct EmulatedSystem emulator = {
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  false,
-  0
-};
+struct EmulatedSystem emulator = {0};
 
 static SDL_Surface *surface = NULL;
 static SDL_Overlay *overlay = NULL;
