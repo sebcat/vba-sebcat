@@ -28,7 +28,7 @@
  * do so, delete this exception statement from your version.
  */
 #include "../system.h"
-#include "../interp.h"
+#include "interp.h"
 
 /***************************************************************************/
 /* HQ2x C implementation */

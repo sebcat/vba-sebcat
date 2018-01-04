@@ -87,7 +87,7 @@ HDRS = \
     expr.h \
     expr_node.h \
     filters/hq2x_int.h \
-    interp.h \
+    filters/interp.h \
     filters/lq2x_int.h \
     memgzio.h \
     thumb.h \
