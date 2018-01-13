@@ -33,13 +33,8 @@
 #include "../gb/gb.h"
 #include "../gb/gb_globals.h"
 
-#ifndef WIN32
 # include <unistd.h>
 # define GETCWD getcwd
-#else // WIN32
-# include <direct.h>
-# define GETCWD _getcwd
-#endif // WIN32
 
 extern bool soundEcho;
 extern bool soundLowPass;
