@@ -25,7 +25,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "../auto_build.h"
 #include "../gba.h"
@@ -55,10 +55,10 @@
 #define SYSCONFDIR "/etc"
 #endif
 
-#define MOD_KEYS    (KMOD_CTRL|KMOD_SHIFT|KMOD_ALT|KMOD_META)
-#define MOD_NOCTRL  (KMOD_SHIFT|KMOD_ALT|KMOD_META)
-#define MOD_NOALT   (KMOD_CTRL|KMOD_SHIFT|KMOD_META)
-#define MOD_NOSHIFT (KMOD_CTRL|KMOD_ALT|KMOD_META)
+#define MOD_KEYS    (KMOD_CTRL|KMOD_SHIFT|KMOD_ALT|KMOD_LGUI|KMOD_RGUI)
+#define MOD_NOCTRL  (KMOD_SHIFT|KMOD_ALT|KMOD_LGUI|KMOD_RGUI)
+#define MOD_NOALT   (KMOD_CTRL|KMOD_SHIFT|KMOD_LGUI|KMOD_RGUI)
+#define MOD_NOSHIFT (KMOD_CTRL|KMOD_ALT|KMOD_LGUI|KMOD_RGUI)
 
 
 extern void remoteInit();
@@ -78,6 +78,7 @@ extern void CPUUpdateRenderBuffers(bool);
 
 struct EmulatedSystem emulator = {0};
 
+static SDL_Window *window = NULL;
 static SDL_Surface *surface = NULL;
 
 static int systemSpeed = 0;
@@ -211,7 +212,7 @@ enum {
   KEY_BUTTON_SPEED, KEY_BUTTON_CAPTURE
 };
 
-static u16 joypad[4][12] = {
+static int joypad[4][12] = {
   { SDLK_LEFT,  SDLK_RIGHT,
     SDLK_UP,    SDLK_DOWN,
     SDLK_z,     SDLK_x,
@@ -224,7 +225,7 @@ static u16 joypad[4][12] = {
   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
-static u16 defaultJoypad[12] = {
+static int defaultJoypad[12] = {
   SDLK_LEFT,  SDLK_RIGHT,
   SDLK_UP,    SDLK_DOWN,
   SDLK_z,     SDLK_x,
@@ -233,12 +234,12 @@ static u16 defaultJoypad[12] = {
   SDLK_SPACE, SDLK_F12
 };
 
-static u16 motion[4] = {
-  SDLK_KP4, SDLK_KP6, SDLK_KP8, SDLK_KP2
+static int motion[4] = {
+  SDLK_KP_4, SDLK_KP_6, SDLK_KP_8, SDLK_KP_2
 };
 
-static u16 defaultMotion[4] = {
-  SDLK_KP4, SDLK_KP6, SDLK_KP8, SDLK_KP2
+static int defaultMotion[4] = {
+  SDLK_KP_4, SDLK_KP_6, SDLK_KP_8, SDLK_KP_2
 };
 
 static struct option sdlOptions[] = {
@@ -1836,8 +1837,7 @@ int main(int argc, char **argv)
   if(debuggerStub) 
     remoteInit();
   
-  int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO|
-    SDL_INIT_TIMER|SDL_INIT_NOPARACHUTE;
+  int flags = SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_TIMER;
 
   if(soundOffFlag)
     flags ^= SDL_INIT_AUDIO;
@@ -1879,15 +1879,21 @@ int main(int argc, char **argv)
   
   destWidth = (sizeOption+1)*srcWidth;
   destHeight = (sizeOption+1)*srcHeight;
-  
-  surface = SDL_SetVideoMode(destWidth, destHeight, 16,
-                             SDL_ANYFORMAT|SDL_HWSURFACE|SDL_DOUBLEBUF|
-                             (fullscreen ? SDL_FULLSCREEN : 0));
-  
+
+  window = SDL_CreateWindow("VisualBoyAdvance", SDL_WINDOWPOS_CENTERED,
+      SDL_WINDOWPOS_CENTERED, destWidth, destHeight,
+      (fullscreen ? SDL_WINDOW_FULLSCREEN : 0));
+  if(window == NULL) {
+    systemMessage(0, "Failed to create window");
+    SDL_Quit();
+    exit(EXIT_FAILURE);
+  }
+
+  surface = SDL_GetWindowSurface(window);
   if(surface == NULL) {
     systemMessage(0, "Failed to set video mode");
     SDL_Quit();
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   
   systemRedShift = sdlCalculateShift(surface->format->Rmask);
@@ -2101,8 +2107,6 @@ int main(int argc, char **argv)
 
   autoFrameSkipLastTime = throttleLastTime = systemGetClock();
   
-  SDL_WM_SetCaption("VisualBoyAdvance", NULL);
-
   while(emulating) {
     if(!paused && active) {
       if(debugger && emulator.emuHasDebugger)
@@ -2281,8 +2285,7 @@ void systemDrawScreen()
   }
 
   SDL_UnlockSurface(surface);
-  //  SDL_UpdateRect(surface, 0, 0, destWidth, destHeight);
-  SDL_Flip(surface);
+  SDL_UpdateWindowSurface(window);
 }
 
 bool systemReadJoypads()
@@ -2341,7 +2344,7 @@ u32 systemReadJoypad(int which)
 
 void systemSetTitle(const char *title)
 {
-  SDL_WM_SetCaption(title, NULL);
+  SDL_SetWindowTitle(window, title);
 }
 
 void systemShowSpeed(int speed)
@@ -2673,6 +2676,8 @@ bool systemPauseOnFrame()
 
 void systemGbBorderOn()
 {
+#if 0
+  /* FIXME */
   srcWidth = 256;
   srcHeight = 224;
   gbBorderLineSkip = 256;
@@ -2739,4 +2744,5 @@ void systemGbBorderOn()
     else
       srcPitch = srcWidth*3;
   }
+#endif
 }

@@ -1,7 +1,7 @@
 .PHONY: all clean
 
-LDADD    != pkg-config --libs sdl libpng zlib
-INCLUDES != pkg-config --cflags libpng sdl zlib
+LDADD    != pkg-config --libs sdl2 libpng zlib
+INCLUDES != pkg-config --cflags libpng sdl2 zlib
 
 LDFLAGS += $(LDADD) -lm
 
