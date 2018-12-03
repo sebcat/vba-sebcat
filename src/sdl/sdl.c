@@ -74,17 +74,11 @@ extern bool soundEcho;
 extern bool soundLowPass;
 extern bool soundReverse;
 
-static void Init_Overlay(SDL_Surface *surface, int overlaytype);
-void Quit_Overlay(void);
-static void Draw_Overlay(SDL_Surface *surface, int size);
-
 extern void CPUUpdateRenderBuffers(bool);
 
 struct EmulatedSystem emulator = {0};
 
 static SDL_Surface *surface = NULL;
-static SDL_Overlay *overlay = NULL;
-static SDL_Rect overlay_rect;
 
 static int systemSpeed = 0;
 int systemRedShift = 0;
@@ -184,8 +178,6 @@ static bool paused = false;
 static bool pauseNextFrame = false;
 static bool debuggerStub = false;
 static int fullscreen = 0;
-static bool yuv = false;
-static int yuvType = 0;
 static bool removeIntros = false;
 static int sdlFlashSize = 0;
 static int sdlAutoIPS = 1;
@@ -308,7 +300,6 @@ static struct option sdlOptions[] = {
   { "video-2x", no_argument, &sizeOption, 1 },
   { "video-3x", no_argument, &sizeOption, 2 },
   { "video-4x", no_argument, &sizeOption, 3 },
-  { "yuv", required_argument, 0, 'Y' },
   { NULL, no_argument, NULL, 0 }
 };
 
@@ -1508,12 +1499,6 @@ Options:\n\
       --flash-64k               0 -  64K Flash\n\
       --flash-128k              1 - 128K Flash\n\
   -T, --throttle=THROTTLE      Set the desired throttle (5...1000)\n\
-  -Y, --yuv=TYPE               Use YUV overlay for drawing:\n\
-                                0 - YV12\n\
-                                1 - UYVY\n\
-                                2 - YVYU\n\
-                                3 - YUY2\n\
-                                4 - IYUV\n\
   -b, --bios=BIOS              Use given bios file\n\
   -c, --config=FILE            Read the given configuration file\n\
   -d, --debug                  Enter debugger\n\
@@ -1601,7 +1586,7 @@ int main(int argc, char **argv)
   
   while((op = getopt_long(argc,
                           argv,
-                          "FNT:Y:G:D:b:c:df:hi:p::s:t:v:1234",
+                          "FNT:G:D:b:c:df:hi:p::s:t:v:1234",
                           sdlOptions,
                           NULL)) != -1) {
     switch(op) {
@@ -1643,32 +1628,6 @@ int main(int argc, char **argv)
         exit(-1);
         strcpy(ipsname, optarg);
       }
-      break;
-    case 'Y':
-      yuv = true;
-      if(optarg) {
-        yuvType = atoi(optarg);
-        switch(yuvType) {
-        case 0:
-          yuvType = SDL_YV12_OVERLAY;
-          break;
-        case 1:
-          yuvType = SDL_UYVY_OVERLAY;
-          break;
-        case 2:
-          yuvType = SDL_YVYU_OVERLAY;
-          break;
-        case 3:
-          yuvType = SDL_YUY2_OVERLAY;
-          break;
-        case 4:
-          yuvType = SDL_IYUV_OVERLAY;
-          break;
-        default:
-          yuvType = SDL_YV12_OVERLAY;
-        }
-      } else
-        yuvType = SDL_YV12_OVERLAY;
       break;
     case 'G':
       dbgMain = remoteStubMain;
@@ -1975,14 +1934,6 @@ int main(int argc, char **argv)
   systemColorDepth = surface->format->BitsPerPixel;
   if(systemColorDepth == 15)
     systemColorDepth = 16;
-
-  if(yuv) {
-    Init_Overlay(surface, yuvType);
-    systemColorDepth = 32;
-    systemRedShift = 3;
-    systemGreenShift = 11;
-    systemBlueShift =  19;
-  }
   
   if(systemColorDepth != 16 && systemColorDepth != 24 &&
      systemColorDepth != 32) {
@@ -2256,11 +2207,6 @@ void systemDrawScreen()
 {
   renderedFrames++;
 
-  if(yuv) {
-    Draw_Overlay(surface, sizeOption+1);
-    return;
-  }
-
   SDL_LockSurface(surface);
 
   if(screenMessage) {
@@ -2305,8 +2251,6 @@ void systemDrawScreen()
     if(systemColorDepth == 16)
       src += srcPitch;
     int option = sizeOption;
-    if(yuv)
-      option = 0;
     switch(option) {
     case 0:
       for(i = 0; i < srcHeight; i++) {
@@ -2762,241 +2706,6 @@ bool systemPauseOnFrame()
     return true;
   }
   return false;
-}
-
-// Code donated by Niels Wagenaar (BoycottAdvance)
-
-// GBA screensize.
-#define GBA_WIDTH   240
-#define GBA_HEIGHT  160
-
-void Init_Overlay(SDL_Surface *gbascreen, int overlaytype)
-{
-  
-  overlay = SDL_CreateYUVOverlay( GBA_WIDTH,
-                                  GBA_HEIGHT,
-                                  overlaytype, gbascreen);
-  fprintf(stderr, "Created %dx%dx%d %s %s overlay\n",
-          overlay->w,overlay->h,overlay->planes,
-          overlay->hw_overlay?"hardware":"software",
-          overlay->format==SDL_YV12_OVERLAY?"YV12":
-          overlay->format==SDL_IYUV_OVERLAY?"IYUV":
-          overlay->format==SDL_YUY2_OVERLAY?"YUY2":
-          overlay->format==SDL_UYVY_OVERLAY?"UYVY":
-          overlay->format==SDL_YVYU_OVERLAY?"YVYU":
-          "Unknown");
-}
-
-void Quit_Overlay(void)
-{
-  SDL_FreeYUVOverlay(overlay);
-}
-
-/* NOTE: These RGB conversion functions are not intended for speed,
-   only as examples.
-*/
-static inline void RGBtoYUV(Uint8 *rgb, int *yuv)
-{
-  yuv[0] = (int)((0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + 16);
-  yuv[1] = (int)(128 - (0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]));
-  yuv[2] = (int)(128 + (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]));
-}
-
-static inline void ConvertRGBtoYV12(SDL_Overlay *o)
-{
-  int x,y;
-  int yuv[3];
-  Uint8 *p,*op[3];
-
-  SDL_LockYUVOverlay(o);
-
-  /* Black initialization */
-  /*
-    memset(o->pixels[0],0,o->pitches[0]*o->h);
-    memset(o->pixels[1],128,o->pitches[1]*((o->h+1)/2));
-    memset(o->pixels[2],128,o->pitches[2]*((o->h+1)/2));
-  */
-
-  /* Convert */
-  for(y=0; y<160 && y<o->h; y++) {
-    p=(Uint8 *)pix+srcPitch*y;
-    op[0]=o->pixels[0]+o->pitches[0]*y;
-    op[1]=o->pixels[1]+o->pitches[1]*(y/2);
-    op[2]=o->pixels[2]+o->pitches[2]*(y/2);
-    for(x=0; x<240 && x<o->w; x++) {
-      RGBtoYUV(p,yuv);
-      *(op[0]++)=yuv[0];
-      if(x%2==0 && y%2==0) {
-        *(op[1]++)=yuv[2];
-        *(op[2]++)=yuv[1];
-      }
-      p+=4;//s->format->BytesPerPixel;
-    }
-  }
-  
-  SDL_UnlockYUVOverlay(o);
-}
-
-static inline void ConvertRGBtoIYUV(SDL_Overlay *o)
-{
-  int x,y;
-  int yuv[3];
-  Uint8 *p,*op[3];
-  
-  SDL_LockYUVOverlay(o);
-  
-  /* Black initialization */
-  /*
-    memset(o->pixels[0],0,o->pitches[0]*o->h);
-    memset(o->pixels[1],128,o->pitches[1]*((o->h+1)/2));
-    memset(o->pixels[2],128,o->pitches[2]*((o->h+1)/2));
-  */
-  
-  /* Convert */
-  for(y=0; y<160 && y<o->h; y++) {
-    p=(Uint8 *)pix+srcPitch*y;
-    op[0]=o->pixels[0]+o->pitches[0]*y;
-    op[1]=o->pixels[1]+o->pitches[1]*(y/2);
-    op[2]=o->pixels[2]+o->pitches[2]*(y/2);
-    for(x=0; x<240 && x<o->w; x++) {
-      RGBtoYUV(p,yuv);
-      *(op[0]++)=yuv[0];
-      if(x%2==0 && y%2==0) {
-        *(op[1]++)=yuv[1];
-        *(op[2]++)=yuv[2];
-      }
-      p+=4; //s->format->BytesPerPixel;
-    }
-  }
-  
-  SDL_UnlockYUVOverlay(o);
-}
-
-static inline void ConvertRGBtoUYVY(SDL_Overlay *o)
-{
-  int x,y;
-  int yuv[3];
-  Uint8 *p,*op;
-  
-  SDL_LockYUVOverlay(o);
-  
-  for(y=0; y<160 && y<o->h; y++) {
-    p=(Uint8 *)pix+srcPitch*y;
-    op=o->pixels[0]+o->pitches[0]*y;
-    for(x=0; x<240 && x<o->w; x++) {
-      RGBtoYUV(p,yuv);
-      if(x%2==0) {
-        *(op++)=yuv[1];
-        *(op++)=yuv[0];
-        *(op++)=yuv[2];
-      } else
-        *(op++)=yuv[0];
-      
-      p+=4; //s->format->BytesPerPixel;
-    }
-  }
-  
-  SDL_UnlockYUVOverlay(o);
-}
-
-static inline void ConvertRGBtoYVYU(SDL_Overlay *o)
-{
-  int x,y;
-  int yuv[3];
-  Uint8 *p,*op;
-  
-  SDL_LockYUVOverlay(o);
-  
-  for(y=0; y<160 && y<o->h; y++) {
-    p=(Uint8 *)pix+srcPitch*y;
-    op=o->pixels[0]+o->pitches[0]*y;
-    for(x=0; x<240 && x<o->w; x++) {
-      RGBtoYUV(p,yuv);
-      if(x%2==0) {
-        *(op++)=yuv[0];
-        *(op++)=yuv[2];
-        op[1]=yuv[1];
-      } else {
-        *op=yuv[0];
-        op+=2;
-      }
-      
-      p+=4; //s->format->BytesPerPixel;
-    }
-  }
-  
-  SDL_UnlockYUVOverlay(o);
-}
-
-static inline void ConvertRGBtoYUY2(SDL_Overlay *o)
-{
-  int x,y;
-  int yuv[3];
-  Uint8 *p,*op;
-  
-  SDL_LockYUVOverlay(o);
-  
-  for(y=0; y<160 && y<o->h; y++) {
-    p=(Uint8 *)pix+srcPitch*y;
-    op=o->pixels[0]+o->pitches[0]*y;
-    for(x=0; x<240 && x<o->w; x++) {
-      RGBtoYUV(p,yuv);
-      if(x%2==0) {
-        *(op++)=yuv[0];
-        *(op++)=yuv[1];
-        op[1]=yuv[2];
-      } else {
-        *op=yuv[0];
-        op+=2;
-      }
-      
-      p+=4; //s->format->BytesPerPixel;
-    }
-  }
-  
-  SDL_UnlockYUVOverlay(o);
-}
-
-static inline void Convert32bit(SDL_Surface *display)
-{
-  switch(overlay->format) {
-  case SDL_YV12_OVERLAY:
-    ConvertRGBtoYV12(overlay);
-    break;
-  case SDL_UYVY_OVERLAY:
-    ConvertRGBtoUYVY(overlay);
-    break;
-  case SDL_YVYU_OVERLAY:
-    ConvertRGBtoYVYU(overlay);
-    break;
-  case SDL_YUY2_OVERLAY:
-    ConvertRGBtoYUY2(overlay);
-    break;
-  case SDL_IYUV_OVERLAY:
-    ConvertRGBtoIYUV(overlay);
-    break;
-  default:
-    fprintf(stderr, "cannot convert RGB picture to obtained YUV format!\n");
-    exit(1);
-    break;
-  }
-  
-}
-
-
-void Draw_Overlay(SDL_Surface *display, int size)
-{
-  SDL_LockYUVOverlay(overlay);
-  
-  Convert32bit(display);
-  
-  overlay_rect.x = 0;
-  overlay_rect.y = 0;
-  overlay_rect.w = GBA_WIDTH  * size;
-  overlay_rect.h = GBA_HEIGHT * size;
-
-  SDL_DisplayYUVOverlay(overlay, &overlay_rect);
-  SDL_UnlockYUVOverlay(overlay);
 }
 
 void systemGbBorderOn()
