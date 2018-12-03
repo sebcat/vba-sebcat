@@ -121,7 +121,6 @@ void (*dbgSignal)(int,int) = debuggerSignal;
 void (*dbgOutput)(const char *, u32) = debuggerOutput;
 
 
-static int pauseWhenInactive = 0;
 static int active = 1;
 static void (*filterFunction)(u8*,u32,u8*,u8*,u32,int,int) = NULL;
 static void (*ifbFunction)(u8*,u32,int,int) = NULL;
@@ -278,11 +277,9 @@ static struct option sdlOptions[] = {
   { "no-auto-frameskip", no_argument, &autoFrameSkip, 0 },
   { "no-debug", no_argument, 0, 'N' },
   { "no-ips", no_argument, &sdlAutoIPS, 0 },
-  { "no-pause-when-inactive", no_argument, &pauseWhenInactive, 0 },
   { "no-rtc", no_argument, &sdlRtcEnable, 0 },
   { "no-show-speed", no_argument, &showSpeed, 0 },
   { "no-throttle", no_argument, &throttle, 0 },
-  { "pause-when-inactive", no_argument, &pauseWhenInactive, 1 },
   { "profile", optional_argument, 0, 'p' },
   { "rtc", no_argument, &sdlRtcEnable, 1 },
   { "save-type", required_argument, 0, 't' },
@@ -849,8 +846,6 @@ static void sdlReadPreferences(FILE *f)
       throttle = sdlFromHex(value);
       if(throttle != 0 && (throttle < 5 || throttle > 1000))
         throttle = 0;
-    } else if(!strcmp(key, "pauseWhenInactive")) {
-      pauseWhenInactive = sdlFromHex(value) ? true : false;
     } else if(!strcmp(key, "agbPrint")) {
       sdlAgbPrint = sdlFromHex(value);
     } else if(!strcmp(key, "rtcEnabled")) {
@@ -1293,24 +1288,6 @@ static void sdlPollEvents()
     case SDL_QUIT:
       emulating = 0;
       break;
-    case SDL_ACTIVEEVENT:
-      if(pauseWhenInactive && (event.active.state & SDL_APPINPUTFOCUS)) {
-        active = event.active.gain;
-        if(active) {
-          if(!paused) {
-            if(emulating)
-              soundResume();
-          }
-        } else {
-          wasPaused = true;
-          if(pauseWhenInactive) {
-            if(emulating)
-              soundPause();
-          }
-          memset(delta,255,DELTA_SIZE);
-        }
-      }
-      break;
     case SDL_MOUSEMOTION:
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
@@ -1551,11 +1528,9 @@ Long options only:\n\
       --no-agb-print           Disable AGBPrint support\n\
       --no-auto-frameskip      Disable auto frameskipping\n\
       --no-ips                 Do not apply IPS patch\n\
-      --no-pause-when-inactive Don't pause when inactive\n\
       --no-rtc                 Disable RTC support\n\
       --no-show-speed          Don't show emulation speed\n\
       --no-throttle            Disable thrrotle\n\
-      --pause-when-inactive    Pause when inactive\n\
       --rtc                    Enable RTC support\n\
       --show-speed-normal      Show emulation speed\n\
       --show-speed-detailed    Show detailed speed data\n\
