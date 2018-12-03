@@ -1353,18 +1353,6 @@ static void sdlPollEvents()
       case SDLK_ESCAPE:
         emulating = 0;
         break;
-      case SDLK_f:
-        if(!(event.key.keysym.mod & MOD_NOCTRL) &&
-           (event.key.keysym.mod & KMOD_CTRL)) {
-          int flags = 0;
-          fullscreen = !fullscreen;
-          if(fullscreen)
-            flags |= SDL_FULLSCREEN;
-          SDL_SetVideoMode(destWidth, destHeight, systemColorDepth, flags);
-          //          if(SDL_WM_ToggleFullScreen(surface))
-          //            fullscreen = !fullscreen;
-        }
-        break;
       case SDLK_F11:
         if(dbgMain != debuggerMain) {
           if(armState) {
