@@ -1,14 +1,14 @@
 .PHONY: all clean
 
-LDADD != pkg-config --libs sdl libpng zlib
+LDADD    != pkg-config --libs sdl libpng zlib
+INCLUDES != pkg-config --cflags libpng sdl zlib
 
 LDFLAGS += $(LDADD) -lm
 
 CFLAGS += \
+    $(INCLUDES) \
     -Wall \
     -Werror \
-    -I/usr/local/include \
-    -I/usr/local/include/libpng16/ \
     -DSDL \
     -DSYSCONFDIR=\"/etc\"
 
