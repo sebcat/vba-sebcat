@@ -19,6 +19,8 @@
 #ifndef VBA_GB_GB_H
 #define VBA_GB_GB_H
 
+#include "../system.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
