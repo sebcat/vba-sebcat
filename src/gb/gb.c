@@ -2392,12 +2392,14 @@ bool gbReadSaveState(const char *name)
   return res;
 }
 
+#ifdef HAVE_PNG
 bool gbWritePNGFile(const char *fileName)
 {
   if(gbBorderOn)
     return utilWritePNGFile(fileName, 256, 224, pix);
   return utilWritePNGFile(fileName, 160, 144, pix);
 }
+#endif
 
 bool gbWriteBMPFile(const char *fileName)
 {
@@ -3175,7 +3177,9 @@ struct EmulatedSystem GBSystem = {
   .emuWriteState = gbWriteSaveState,
   .emuReadMemState = gbReadMemSaveState,
   .emuWriteMemState = gbWriteMemSaveState,
+#ifdef HAVE_PNG
   .emuWritePNG = gbWritePNGFile,
+#endif
   .emuWriteBMP = gbWriteBMPFile,
   .emuUpdateCPSR = NULL,
   .emuHasDebugger = false,

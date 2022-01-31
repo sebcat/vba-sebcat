@@ -36,7 +36,9 @@ typedef struct {
   int size;
 } variable_desc;
 
+#ifdef HAVE_PNG
 extern bool utilWritePNGFile(const char *, int, int, u8 *);
+#endif
 extern bool utilWriteBMPFile(const char *, int, int, u8 *);
 extern void utilApplyIPS(const char *ips, u8 **rom, int *size);
 extern void utilWriteBMP(char *, int, int, u8 *);

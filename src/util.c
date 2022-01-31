@@ -20,7 +20,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
+#ifdef HAVE_PNG
 #include <png.h>
+#endif
 
 #include "system.h"
 #include "NLS.h"
@@ -40,6 +42,7 @@ static int (*utilGzWriteFunc)(gzFile, const voidp, unsigned int) = NULL;
 static int (*utilGzReadFunc)(gzFile, voidp, unsigned int) = NULL;
 static int (*utilGzCloseFunc)(gzFile) = NULL;
 
+#ifdef HAVE_PNG
 bool utilWritePNGFile(const char *fileName, int w, int h, u8 *pix)
 {
   u8 writeBuffer[512 * 3];
@@ -167,6 +170,7 @@ bool utilWritePNGFile(const char *fileName, int w, int h, u8 *pix)
 
   return true;  
 }
+#endif /* HAVE_PNG */
 
 void utilPutDword(u8 *p, u32 value)
 {
@@ -818,7 +822,6 @@ static u8 *utilLoadGzipFile(const char *file,
 
   return image;  
 }
-
 
 u8 *utilLoad(const char *file,
              bool (*accept)(const char *),

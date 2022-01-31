@@ -10,6 +10,7 @@ CFLAGS += \
     -Wall \
     -Werror \
     -DSDL \
+    -DHAVE_PNG=1 \
     -DSYSCONFDIR=\"/etc\"
 
 SRCS = \

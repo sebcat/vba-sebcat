@@ -1,7 +1,7 @@
 .PHONY: all clean
 
-LDADD    != pkg-config --libs sdl2 libpng zlib
-INCLUDES != pkg-config --cflags libpng sdl2 zlib
+LDADD    != pkg-config --libs zlib
+INCLUDES != pkg-config --cflags zlib
 
 LDFLAGS += $(LDADD) -lm
 
@@ -9,7 +9,6 @@ CFLAGS += \
     $(INCLUDES) \
     -Wall \
     -Werror \
-    -DSDL \
     -DSYSCONFDIR=\"/etc\"
 
 SRCS = \
