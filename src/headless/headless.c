@@ -1,16 +1,42 @@
 #include "../system.h"
 
-u16 systemGbPalette[24];
+u16 systemGbPalette[24] = {
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+    0x1f | (0x1f << 5) | (0x1f << 10),
+    0x15 | (0x15 << 5) | (0x15 << 10),
+    0x0c | (0x0c << 5) | (0x0c << 10),
+    0,
+};
+
 int systemSaveUpdateCounter;
 int systemDebug;
-int systemColorDepth;
+int systemColorDepth = 24;
 u16 systemColorMap16[0x10000];
 u32 systemColorMap32[0x10000];
 int systemFrameSkip;
 bool systemSoundOn;
-int systemRedShift;
-int systemGreenShift;
-int systemBlueShift;
+int systemRedShift = 3;
+int systemGreenShift = 11;
+int systemBlueShift = 19;
 
 int emulating;
 void (*cpuSaveGameFunc)(u32,u8);
@@ -39,7 +65,7 @@ int  systemGetSensorY() { return 0;}
 void systemGbPrint(u8 *data,int pages,int feed,int palette, int contrast) {}
 void systemGbBorderOn() {}
 
-void CPUCheckDMA(int reason,int mask) {}
+void CPUCheckDMA(int reason,int mask) {} /* XXX: This is GBA */
 
 void systemSoundShutdown() {}
 void systemSoundPause() {}
