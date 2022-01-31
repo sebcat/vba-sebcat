@@ -19,6 +19,8 @@
 #ifndef VBA_GLOBALS_H
 #define VBA_GLOBALS_H
 
+#include "system.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

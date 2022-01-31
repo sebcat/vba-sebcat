@@ -19,6 +19,8 @@
 #ifndef GB_GLOBALS_H__
 #define GB_GLOBALS_H__
 
+#include "../system.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
